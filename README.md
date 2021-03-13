@@ -39,9 +39,7 @@ nvm install --lts
 
 ### Installing
 
-## Built With
-
-## Built With
+## Authors
 
 ## License
 
