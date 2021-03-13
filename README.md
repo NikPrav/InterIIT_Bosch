@@ -5,8 +5,6 @@ Repo for code written for Bosch's Traffic Sign Recognition problem statement at 
 ## Summary
 
   - [Getting Started](#getting-started)
-  - [Deployment](#deployment)
-  - [Built With](#built-with)
   - [Authors](#authors)
   - [License](#license)
   - [Acknowledgments](#acknowledgments)
@@ -35,6 +33,7 @@ Setup Node:
 ```sh
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash
 nvm install --lts
+npm i -g prettier
 ```
 
 Setup Git hooks:
@@ -45,9 +44,7 @@ git config --local include.path ../.gitconfig
 
 ### Installing
 
-## Built With
-
-## Built With
+## Authors
 
 ## License
 
