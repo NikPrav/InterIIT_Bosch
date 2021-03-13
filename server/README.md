@@ -1,17 +1,17 @@
-<h1>Flask backed</h1>
-App that takes in a JSO sting of the format
-```{
-    "image":<base64ImageData>,
-    "transform":"type fo transform"
-}```
+# Server
+Server that implements augmentations, serves trained model and allows adding new data.
 
-and returns the transformed image as `<base64ImageData>`
+Currently takes in a JSON string of the format { "image":, "transform":"type fo transform" }
+and returns the transformed image as base64ImageData.
 
-<h2>Setup<h2>
-***Note: this code is set in DEBUG mode,remember to set the debug flag in the `config.py` to false***
+## Setup
+Note: this code is set in DEBUG mode,remember to set the debug flag in the `config.py` to false
 
 For installing requirments, do
-```pip install -r requrements.txt```
+`poetry install`
 
 For running the app, do 
-``` python run.py```
+```sh
+poetry shell # everytime
+python run.py
+```
