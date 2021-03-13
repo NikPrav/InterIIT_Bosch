@@ -5,8 +5,6 @@ Repo for code written for Bosch's Traffic Sign Recognition problem statement at 
 ## Summary
 
   - [Getting Started](#getting-started)
-  - [Deployment](#deployment)
-  - [Built With](#built-with)
   - [Authors](#authors)
   - [License](#license)
   - [Acknowledgments](#acknowledgments)
