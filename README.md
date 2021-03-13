@@ -31,9 +31,17 @@ pipx install flake8
 
 Setup Node:
 ```sh
+# First two lines install nvm and then node using nvm
+# Feel free to skip if you have node installed
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash
 nvm install --lts
 npm i -g prettier
+```
+
+You'll have to add the following to your .bashrc if you use nvm:
+```
+export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
 ```
 
 Setup Git hooks:
