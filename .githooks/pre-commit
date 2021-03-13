@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+prettier --config web/.prettierrc.json -cw \
+`git diff --diff-filter=d --cached --name-only | grep -E '^.*\.(js|jsx|tsx|ts)$' | xargs`;
+
+black `git diff --diff-filter=d --cached --name-only | grep -E '^.*\.(py)' | xargs`
+isort `git diff --diff-filter=d --cached --name-only | grep -E '^.*\.(py)' | xargs`

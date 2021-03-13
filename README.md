@@ -37,6 +37,12 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash
 nvm install --lts
 ```
 
+Setup Git hooks:
+```sh
+git config --local include.path ../.gitconfig
+# git hooks will help with formatting and all
+```
+
 ### Installing
 
 ## Built With
