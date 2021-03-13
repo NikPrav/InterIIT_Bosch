@@ -18,6 +18,7 @@ your local machine for development and testing purposes.
 
 Setup Python:
 ```sh
+sudo apt install libgl1-mesa-glx
 python3 -m pip install --user pipx
 python3 -m pipx ensurepath
 pipx completions
