@@ -1,7 +1,9 @@
 import mongoengine as me
-from mongoengine import connect, Document, EmbeddedDocument
-from mongoengine.fields import BaseField, StringField, DateTimeField, ListField, DictField
+from mongoengine import Document, EmbeddedDocument, connect
 from mongoengine.errors import NotUniqueError, OperationError
+from mongoengine.fields import (BaseField, DateTimeField, DictField, ListField,
+                                StringField)
+
 
 class Dataset(Document):
     name = StringField(required=True)

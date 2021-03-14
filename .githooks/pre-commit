@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 
-prettier --config web/.prettierrc.json -cw \
-`git diff --diff-filter=d --cached --name-only | grep -E '^.*\.(js|jsx|tsx|ts)$' | xargs`;
+echo $GIT_DIR
 
-black `git diff --diff-filter=d --cached --name-only | grep -E '^.*\.(py)' | xargs`
-isort `git diff --diff-filter=d --cached --name-only | grep -E '^.*\.(py)' | xargs`
+(cd $(git rev-parse --show-toplevel)  && prettier --config web/.prettierrc.json -cw \
+  `git diff --diff-filter=d --cached --name-only | grep -E '^.*\.(js|jsx|tsx|ts)$' | xargs`)
+
+(cd $(git rev-parse --show-toplevel)  && black \
+  `git diff --diff-filter=d --cached --name-only | grep -E '^.*\.(py)' | xargs`)
+(cd $(git rev-parse --show-toplevel)  && isort \
+  `git diff --diff-filter=d --cached --name-only | grep -E '^.*\.(py)' | xargs`)
