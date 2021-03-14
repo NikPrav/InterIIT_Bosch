@@ -16,8 +16,11 @@ your local machine for development and testing purposes.
 
 ### Prerequisites
 
+**Use black for formatting Python code and prettier (with config in web folder) before committing. If you are on Ubuntu (or any Linux) and follow the instructions given below, they should run automatically with every commit.**
+
 Setup Python:
 ```sh
+sudo apt install python3-virtualenv python3.8-venv python3-dev python3.8-dev python3-pip
 sudo apt install libgl1-mesa-glx
 python3 -m pip install --user pipx
 python3 -m pipx ensurepath
@@ -50,6 +53,8 @@ Setup Git hooks:
 git config --local include.path ../.gitconfig
 # git hooks will help with formatting and all
 ```
+
+For mongo, follow instructions on Mongo website.
 
 ### Installing
 
