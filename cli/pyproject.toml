@@ -8,6 +8,7 @@ authors = ["nikhil <ch17btech11023@iith.ac.in>"]
 python = "^3.8"
 click = "^7.1.2"
 requests = "^2.25.1"
+click-didyoumean = "^0.0.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
