@@ -67,6 +67,20 @@ docs = ["sphinx", "pallets-sphinx-themes", "sphinxcontrib-log-cabinet", "sphinx-
 dotenv = ["python-dotenv"]
 
 [[package]]
+name = "gunicorn"
+version = "20.0.4"
+description = "WSGI HTTP Server for UNIX"
+category = "main"
+optional = false
+python-versions = ">=3.4"
+
+[package.extras]
+eventlet = ["eventlet (>=0.9.7)"]
+gevent = ["gevent (>=0.13)"]
+setproctitle = ["setproctitle"]
+tornado = ["tornado (>=0.2)"]
+
+[[package]]
 name = "isort"
 version = "5.7.0"
 description = "A Python utility / library to sort Python imports."
@@ -145,6 +159,17 @@ python-versions = ">=3.6"
 pymongo = ">=3.4,<4.0"
 
 [[package]]
+name = "motor"
+version = "2.3.1"
+description = "Non-blocking MongoDB driver for Tornado or asyncio"
+category = "main"
+optional = false
+python-versions = ">=3.5.2"
+
+[package.dependencies]
+pymongo = ">=3.11,<4"
+
+[[package]]
 name = "mypy-extensions"
 version = "0.4.3"
 description = "Experimental type system extensions for programs checked with the mypy typechecker."
@@ -159,6 +184,21 @@ description = "NumPy is the fundamental package for array computing with Python.
 category = "main"
 optional = false
 python-versions = ">=3.7"
+
+[[package]]
+name = "odmantic"
+version = "0.3.4"
+description = "ODMantic, an AsyncIO MongoDB Object Document Mapper for Python using type hints "
+category = "main"
+optional = false
+python-versions = ">=3.6,<4.0"
+
+[package.dependencies]
+motor = ">=2.1.0,<2.4.0"
+pydantic = ">=1.6.0,<1.9.0"
+
+[package.extras]
+fastapi = ["fastapi (>=0.61.1,<0.64.0)"]
 
 [[package]]
 name = "opencv-python"
@@ -186,6 +226,22 @@ description = "Python Imaging Library (Fork)"
 category = "main"
 optional = false
 python-versions = ">=3.6"
+
+[[package]]
+name = "pydantic"
+version = "1.8.1"
+description = "Data validation and settings management using python 3.6 type hinting"
+category = "main"
+optional = false
+python-versions = ">=3.6.1"
+
+[package.dependencies]
+python-dotenv = {version = ">=0.10.4", optional = true, markers = "extra == \"dotenv\""}
+typing-extensions = ">=3.7.4.3"
+
+[package.extras]
+dotenv = ["python-dotenv (>=0.10.4)"]
+email = ["email-validator (>=1.0.3)"]
 
 [[package]]
 name = "pymongo"
@@ -223,6 +279,17 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
 
 [package.dependencies]
 six = ">=1.5"
+
+[[package]]
+name = "python-dotenv"
+version = "0.15.0"
+description = "Add .env support to your django/flask apps in development and deployments"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.extras]
+cli = ["click (>=5.0)"]
 
 [[package]]
 name = "regex"
@@ -307,7 +374,7 @@ watchdog = ["watchdog"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "ff554fafce367f132e11913692c33d89ddb29afad800b1ca3ec1727ab0bcd8ef"
+content-hash = "04b33789cbb6d9edb6c86895de1788f4b057ccf22537d635ae7bc8a7107cd518"
 
 [metadata.files]
 appdirs = [
@@ -328,6 +395,10 @@ cycler = [
 flask = [
     {file = "Flask-1.1.2-py2.py3-none-any.whl", hash = "sha256:8a4fdd8936eba2512e9c85df320a37e694c93945b33ef33c89946a340a238557"},
     {file = "Flask-1.1.2.tar.gz", hash = "sha256:4efa1ae2d7c9865af48986de8aeb8504bf32c7f3d6fdc9353d34b21f4b127060"},
+]
+gunicorn = [
+    {file = "gunicorn-20.0.4-py2.py3-none-any.whl", hash = "sha256:cd4a810dd51bf497552cf3f863b575dabd73d6ad6a91075b65936b151cbf4f9c"},
+    {file = "gunicorn-20.0.4.tar.gz", hash = "sha256:1904bb2b8a43658807108d59c3f3d56c2b6121a701161de0ddf9ad140073c626"},
 ]
 isort = [
     {file = "isort-5.7.0-py3-none-any.whl", hash = "sha256:fff4f0c04e1825522ce6949973e83110a6e907750cd92d128b0d14aaaadbffdc"},
@@ -460,6 +531,10 @@ mongoengine = [
     {file = "mongoengine-0.23.0-py3-none-any.whl", hash = "sha256:136d93af442d867e1d52f90c3d3066112ad91578239d0bf5b8131b3ea15b3d75"},
     {file = "mongoengine-0.23.0.tar.gz", hash = "sha256:4b5a4aa317a138f09df956deaac1d62c1618af24a27c1826a6893709007d9047"},
 ]
+motor = [
+    {file = "motor-2.3.1-py3-none-any.whl", hash = "sha256:ea5a8f5c7cbb08b7c301d7c66746fc96333d634182df236dff0f814f802fe232"},
+    {file = "motor-2.3.1.tar.gz", hash = "sha256:319df35ef9d4099dc125b7d46b552fa88578675e0b06cab94624c666bb0a8a90"},
+]
 mypy-extensions = [
     {file = "mypy_extensions-0.4.3-py2.py3-none-any.whl", hash = "sha256:090fedd75945a69ae91ce1303b5824f428daf5a028d2f6ab8a299250a846f15d"},
     {file = "mypy_extensions-0.4.3.tar.gz", hash = "sha256:2d82818f5bb3e369420cb3c4060a7970edba416647068eb4c5343488a6c604a8"},
@@ -489,6 +564,10 @@ numpy = [
     {file = "numpy-1.20.1-cp39-cp39-win_amd64.whl", hash = "sha256:9c94cab5054bad82a70b2e77741271790304651d584e2cdfe2041488e753863b"},
     {file = "numpy-1.20.1-pp37-pypy37_pp73-manylinux2010_x86_64.whl", hash = "sha256:9eb551d122fadca7774b97db8a112b77231dcccda8e91a5bc99e79890797175e"},
     {file = "numpy-1.20.1.zip", hash = "sha256:3bc63486a870294683980d76ec1e3efc786295ae00128f9ea38e2c6e74d5a60a"},
+]
+odmantic = [
+    {file = "ODMantic-0.3.4-py3-none-any.whl", hash = "sha256:1221322cc3725b71806f0a5d708aa78da1ad631b71368d7a2318105a13a38e76"},
+    {file = "ODMantic-0.3.4.tar.gz", hash = "sha256:314724ba384c91ac13a5bfdf4a5da5c0ce5425760f6a06d63441b701337bb95d"},
 ]
 opencv-python = [
     {file = "opencv-python-4.5.1.48.tar.gz", hash = "sha256:78a6db8467639383caedf1d111da3510a4ee1a0aacf2117821cae2ee8f92ce37"},
@@ -555,6 +634,30 @@ pillow = [
     {file = "Pillow-8.1.2-pp37-pypy37_pp73-manylinux2010_x86_64.whl", hash = "sha256:6efac40344d8f668b6c4533ae02a48d52fd852ef0654cc6f19f6ac146399c733"},
     {file = "Pillow-8.1.2-pp37-pypy37_pp73-win32.whl", hash = "sha256:f36c3ff63d6fc509ce599a2f5b0d0732189eed653420e7294c039d342c6e204a"},
     {file = "Pillow-8.1.2.tar.gz", hash = "sha256:b07c660e014852d98a00a91adfbe25033898a9d90a8f39beb2437d22a203fc44"},
+]
+pydantic = [
+    {file = "pydantic-1.8.1-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:0c40162796fc8d0aa744875b60e4dc36834db9f2a25dbf9ba9664b1915a23850"},
+    {file = "pydantic-1.8.1-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:fff29fe54ec419338c522b908154a2efabeee4f483e48990f87e189661f31ce3"},
+    {file = "pydantic-1.8.1-cp36-cp36m-manylinux2014_i686.whl", hash = "sha256:fbfb608febde1afd4743c6822c19060a8dbdd3eb30f98e36061ba4973308059e"},
+    {file = "pydantic-1.8.1-cp36-cp36m-manylinux2014_x86_64.whl", hash = "sha256:eb8ccf12295113ce0de38f80b25f736d62f0a8d87c6b88aca645f168f9c78771"},
+    {file = "pydantic-1.8.1-cp36-cp36m-win_amd64.whl", hash = "sha256:20d42f1be7c7acc352b3d09b0cf505a9fab9deb93125061b376fbe1f06a5459f"},
+    {file = "pydantic-1.8.1-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:dde4ca368e82791de97c2ec019681ffb437728090c0ff0c3852708cf923e0c7d"},
+    {file = "pydantic-1.8.1-cp37-cp37m-manylinux1_i686.whl", hash = "sha256:3bbd023c981cbe26e6e21c8d2ce78485f85c2e77f7bab5ec15b7d2a1f491918f"},
+    {file = "pydantic-1.8.1-cp37-cp37m-manylinux2014_i686.whl", hash = "sha256:830ef1a148012b640186bf4d9789a206c56071ff38f2460a32ae67ca21880eb8"},
+    {file = "pydantic-1.8.1-cp37-cp37m-manylinux2014_x86_64.whl", hash = "sha256:fb77f7a7e111db1832ae3f8f44203691e15b1fa7e5a1cb9691d4e2659aee41c4"},
+    {file = "pydantic-1.8.1-cp37-cp37m-win_amd64.whl", hash = "sha256:3bcb9d7e1f9849a6bdbd027aabb3a06414abd6068cb3b21c49427956cce5038a"},
+    {file = "pydantic-1.8.1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:2287ebff0018eec3cc69b1d09d4b7cebf277726fa1bd96b45806283c1d808683"},
+    {file = "pydantic-1.8.1-cp38-cp38-manylinux1_i686.whl", hash = "sha256:4bbc47cf7925c86a345d03b07086696ed916c7663cb76aa409edaa54546e53e2"},
+    {file = "pydantic-1.8.1-cp38-cp38-manylinux2014_i686.whl", hash = "sha256:6388ef4ef1435364c8cc9a8192238aed030595e873d8462447ccef2e17387125"},
+    {file = "pydantic-1.8.1-cp38-cp38-manylinux2014_x86_64.whl", hash = "sha256:dd4888b300769ecec194ca8f2699415f5f7760365ddbe243d4fd6581485fa5f0"},
+    {file = "pydantic-1.8.1-cp38-cp38-win_amd64.whl", hash = "sha256:8fbb677e4e89c8ab3d450df7b1d9caed23f254072e8597c33279460eeae59b99"},
+    {file = "pydantic-1.8.1-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:2f2736d9a996b976cfdfe52455ad27462308c9d3d0ae21a2aa8b4cd1a78f47b9"},
+    {file = "pydantic-1.8.1-cp39-cp39-manylinux1_i686.whl", hash = "sha256:3114d74329873af0a0e8004627f5389f3bb27f956b965ddd3e355fe984a1789c"},
+    {file = "pydantic-1.8.1-cp39-cp39-manylinux2014_i686.whl", hash = "sha256:258576f2d997ee4573469633592e8b99aa13bda182fcc28e875f866016c8e07e"},
+    {file = "pydantic-1.8.1-cp39-cp39-manylinux2014_x86_64.whl", hash = "sha256:c17a0b35c854049e67c68b48d55e026c84f35593c66d69b278b8b49e2484346f"},
+    {file = "pydantic-1.8.1-cp39-cp39-win_amd64.whl", hash = "sha256:e8bc082afef97c5fd3903d05c6f7bb3a6af9fc18631b4cc9fedeb4720efb0c58"},
+    {file = "pydantic-1.8.1-py3-none-any.whl", hash = "sha256:e3f8790c47ac42549dc8b045a67b0ca371c7f66e73040d0197ce6172b385e520"},
+    {file = "pydantic-1.8.1.tar.gz", hash = "sha256:26cf3cb2e68ec6c0cfcb6293e69fb3450c5fd1ace87f46b64f678b0d29eac4c3"},
 ]
 pymongo = [
     {file = "pymongo-3.11.3-cp27-cp27m-macosx_10_14_intel.whl", hash = "sha256:4d959e929cec805c2bf391418b1121590b4e7d5cb00af7b1ba521443d45a0918"},
@@ -629,6 +732,10 @@ pyparsing = [
 python-dateutil = [
     {file = "python-dateutil-2.8.1.tar.gz", hash = "sha256:73ebfe9dbf22e832286dafa60473e4cd239f8592f699aa5adaf10050e6e1823c"},
     {file = "python_dateutil-2.8.1-py2.py3-none-any.whl", hash = "sha256:75bb3f31ea686f1197762692a9ee6a7550b59fc6ca3a1f4b5d7e32fb98e2da2a"},
+]
+python-dotenv = [
+    {file = "python-dotenv-0.15.0.tar.gz", hash = "sha256:587825ed60b1711daea4832cf37524dfd404325b7db5e25ebe88c495c9f807a0"},
+    {file = "python_dotenv-0.15.0-py2.py3-none-any.whl", hash = "sha256:0c8d1b80d1a1e91717ea7d526178e3882732420b03f08afea0406db6402e220e"},
 ]
 regex = [
     {file = "regex-2020.11.13-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:8b882a78c320478b12ff024e81dc7d43c1462aa4a3341c754ee65d857a521f85"},
