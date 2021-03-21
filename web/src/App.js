@@ -1,9 +1,9 @@
-import "antd/dist/antd.dark.css";
+import "antd/dist/antd.css";
 import "./App.css";
 import {Switch, Route, BrowserRouter as Router} from "react-router-dom";
 import Editor from "./Components/Editor/Editor";
 import Landing from "./Components/Landing/Landing";
-import Home from "./Components/Home/Home"
+import Home from "./Components/Home/Home";
 
 function App() {
   return (

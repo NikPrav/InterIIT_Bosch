@@ -1,6 +1,6 @@
 import react, {useState} from "react";
 import "antd/dist/antd.css";
-import {Layout, Menu, Empty} from "antd";
+import {Layout, Menu, Empty, Card} from "antd";
 import {
   DesktopOutlined,
   PieChartOutlined,
@@ -10,6 +10,8 @@ import {
 } from "@ant-design/icons";
 import "./styles.css";
 import Navbar from "./../Navbar/Navbar";
+import PopupImage from "../PopupImage/PopupImage";
+import ImageRow from "../ImageRow/ImageRow";
 
 function Editor() {
   const {Header, Footer, Sider, Content} = Layout;
@@ -34,12 +36,12 @@ function Editor() {
             <Menu.Item key="2" icon={<FileFilled />}>
               {" "}
               Add a Layer
-            </Menu.Item>*/}
+            </Menu.Item>
             <Menu.Item key="3" icon={<DesktopOutlined />}>
               {" "}
               Outline
             </Menu.Item>
-
+            */}
             <Menu.Item key="4" icon={<TeamOutlined />}>
               {" "}
               HyperParameters
@@ -62,6 +64,7 @@ function Editor() {
           </Menu>
         </Sider>
         <Content>
+          <ImageRow />
           <Empty />
         </Content>
       </Layout>

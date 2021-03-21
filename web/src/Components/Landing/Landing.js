@@ -21,7 +21,7 @@ function Landing() {
 
       <Content className="site-layout-content">
         <div class="center">
-          <Button type="primary" href="/editor" size="large">
+          <Button type="primary" href="/home" size="large">
             Login
           </Button>
           <div style={{textAlign: "center"}}>

@@ -8,7 +8,7 @@ function Navbar() {
       <Menu theme="dark" mode="horizontal">
         <Menu.Item key="1">Train</Menu.Item>
         <Menu.Item key="2">Test</Menu.Item>
-        <Menu.Item key="3">nav1</Menu.Item>
+        <Menu.Item key="3">Inference</Menu.Item>
         {/*
         <Avatar>
             R
