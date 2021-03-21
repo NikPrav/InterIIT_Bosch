@@ -70,10 +70,14 @@ function Home() {
     <Layout>
       <Navbar />
       <Layout.Content className="home-content">
-        <div className="home-heading">
+        <div className="home-heading" >
+          <div style={{textAlign:"center"}}>
           <Title>Welcome, {user.name} !</Title>
           <Text strong>Here are your existing workspaces:</Text>
-          <Button onClick={showModal} type="primary" style={{marginLeft:"5px"}}>Create New</Button>
+          <Button onClick={showModal} type="primary" style={{marginLeft: "5px"}}>
+            Create New
+          </Button>
+          </div>
           <Modal
             title="New Workspace"
             visible={isModalVisible}

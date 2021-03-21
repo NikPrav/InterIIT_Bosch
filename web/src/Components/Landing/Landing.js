@@ -25,7 +25,7 @@ function Landing() {
             Login
           </Button>
           <div style={{textAlign: "center"}}>
-            Press button to login, and add more text to make it look cool
+            Press button to login, and add start training to make it look cool.
           </div>
         </div>
       </Content>
