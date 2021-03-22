@@ -1,17 +1,10 @@
 import mongoengine as me
+from configs import cnf
 from mongoengine import Document, EmbeddedDocument, connect
 from mongoengine.errors import NotUniqueError, OperationError
-from mongoengine.fields import (
-    BaseField,
-    DateTimeField,
-    DictField,
-    ListField,
-    EmailField,
-    ObjectIdField,
-    StringField,
-)
-
-from configs import cnf
+from mongoengine.fields import (BaseField, DateTimeField, DictField,
+                                EmailField, ListField, ObjectIdField,
+                                StringField)
 
 connect(db=cnf.APP_CONFIG.DB)
 
