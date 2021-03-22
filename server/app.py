@@ -3,10 +3,10 @@ import json
 import typing as t
 from functools import wraps
 from io import BytesIO
+
 # from six.moves.urllib.request import urlopen
 from urllib.request import urlopen
 
-import torchcommands
 import torchvision.transforms as transforms
 from flask import Flask, _request_ctx_stack, jsonify, request
 from flask_cors import cross_origin
@@ -14,6 +14,9 @@ from jose import jwt
 from PIL import Image
 from werkzeug.datastructures import Headers
 from werkzeug.wrappers import BaseResponse
+
+import torchcommands
+from models import Info, Globals, Workspace, Dataset
 
 _str_bytes = t.Union[str, bytes]
 _data_type = t.Union[
@@ -175,7 +178,7 @@ def requires_auth(f):
 
 @app.route("/info", methods=["GET"])
 def get_project_info():
-    info = {}
+    info = Info.objects.exclude("_id").to_json()
     return info
 
 
