@@ -4,17 +4,10 @@ import Layout, {Content, Footer, Header} from "antd/lib/layout/layout";
 import {FontColorsOutlined} from "@ant-design/icons";
 import "./styles.css";
 // import Title from "antd/lib/skeleton/Title";
-import { useAuth0 } from "@auth0/auth0-react";
+const {Title} = Typography;
 // const { Header, Content, Footer } = Layout;
 
-
-const {Title} = Typography;
-
-function Landing() {
-  const { loginWithRedirect } = useAuth0();
-  
-
-
+function Logout() {
   return (
     <Layout className="fullpage">
       {/* <PageHeader className = 'site-page-header' title = 'InterIIT Bosch Traffic Sign Detector' textAlign='center'>
@@ -28,11 +21,8 @@ function Landing() {
 
       <Content className="site-layout-content">
         <div class="center">
-          <Button onClick={() => loginWithRedirect()}  type="primary"  size="large">
-            Login
-          </Button>
           <div style={{textAlign: "center"}}>
-            Press button to login, and add start training to make it look cool.
+            You've succesfully logged out hehe
           </div>
         </div>
       </Content>
@@ -49,4 +39,4 @@ function Landing() {
   );
 }
 
-export default Landing;
+export default Logout;

@@ -1,7 +1,13 @@
-import {Layout, Menu, Avatar, Button} from "antd";
+import {Button,Layout, Menu, Avatar} from "antd";
+import ButtonGroup from "antd/lib/button/button-group";
 import React from "react";
+import { useAuth0 } from "@auth0/auth0-react";
+
 
 function Navbar() {
+  const { logout } = useAuth0();
+
+
   return (
     <Layout.Header>
       <div className="logo"></div>
@@ -18,6 +24,9 @@ function Navbar() {
         </Button>
 */}
       </Menu>
+      <Button  style ={{float:'right'}} onClick = {() => logout({  returnTo: 'http://localhost:3000/logout' })}>
+        Logout
+      </Button>
     </Layout.Header>
   );
 }

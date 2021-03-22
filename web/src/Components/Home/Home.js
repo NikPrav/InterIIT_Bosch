@@ -3,11 +3,15 @@ import {Typography, List, Button, Layout, Modal, Card, Space, Dropdown, Menu} fr
 import "./styles.css";
 import {Content} from "antd/lib/layout/layout";
 import Navbar from "../Navbar/Navbar";
+import { useAuth0 } from "@auth0/auth0-react";
+
 
 function Home() {
   const {Title, Paragraph, Text, Link} = Typography;
   const [buttonState, setButtonState] = useState("German DataSet");
-  const user = {name: "Rachit"};
+  // const user = {name: "Rachit"};
+  const { user, isAuthenticated, isLoading } = useAuth0();
+
   const menu = (
     <Menu>
       <Menu.Item>
@@ -67,12 +71,13 @@ function Home() {
     setisModalVisible(false);
   };
   return (
+    isAuthenticated &&(
     <Layout>
       <Navbar />
       <Layout.Content className="home-content">
         <div className="home-heading" >
           <div style={{textAlign:"center"}}>
-          <Title>Welcome, {user.name} !</Title>
+          <Title>Welcome, {user.name.split(' ')[0]} !</Title>
           <Text strong>Here are your existing workspaces:</Text>
           <Button onClick={showModal} type="primary" style={{marginLeft: "5px"}}>
             Create New
@@ -143,8 +148,10 @@ function Home() {
           </div>
         </div>
       </Layout.Content>
-    </Layout>
-  );
+    </Layout> 
+    )
+
+  ); 
 }
 
 export default Home;
