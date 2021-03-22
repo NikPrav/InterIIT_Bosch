@@ -1,12 +1,8 @@
-import react, {useState} from "react";
-import "antd/dist/antd.css";
-import {Layout, Menu, Empty, Card, Dropdown, Button, Switch, Slider, Typography} from "antd";
+import React, {useState} from "react";
+import Navbar from "../Navbar/Navbar";
+import {Layout, Header, Dropdown, Button, Typography, Menu, Card, Slider} from "antd";
 import {DesktopOutlined, FolderAddFilled} from "@ant-design/icons";
 import {IoSettingsSharp} from "react-icons/io5";
-import "./styles.css";
-import Navbar from "./../Navbar/Navbar";
-import ImageRow from "../ImageRow/ImageRow";
-import img from "./../PopupImage/stop.png";
 
 function PrefSlider(props) {
   const {max, min, step} = props;
@@ -24,18 +20,48 @@ function PrefSlider(props) {
 function Preferences() {
   const [buttonState, setButtonState] = useState("German DataSets");
   const LossFns = ["CategoricalCrossEntropy", "MeanSquaredError"];
-
+  
+  const Simple = (item) => {
+    <Menu.Item>
+        {item}
+    </Menu.Item>
+  };
+  const LossFnDropdown = (
+    <Menu>
+      <Menu.Item
+        onClick={() => {
+          setButtonState("German DataSet");
+        }}
+      >
+        German DataSet
+      </Menu.Item>
+      <Menu.Item
+        onClick={() => {
+          setButtonState("British DataSet");
+        }}
+      >
+        British DataSet
+      </Menu.Item>
+      <Menu.Item
+        onClick={() => {
+          setButtonState("Indian DataSet");
+        }}
+      >
+        Indian DataSet
+      </Menu.Item>
+      <Menu.Item
+        danger
+        onClick={() => {
+          setButtonState("Blank DataSet");
+        }}
+      >
+        Blank DataSet
+      </Menu.Item>
+    </Menu>
+  );
   return (
     <Card style={{paddingRight: "100px", paddingLeft: "100px", paddingTop: "30px"}}>
       <div>
-        <p style={{fontSize: "20px"}}>
-          <strong>Viewer Preferences</strong>
-        </p>
-        <p>
-          Show Augmentated Images in DataSet Viewer:{" "}
-          <Switch defaultChecked style={{float: "right"}} />
-        </p>
-
         <p style={{fontSize: "20px"}}>
           <strong>Model Parameters</strong>
         </p>
@@ -48,12 +74,34 @@ function Preferences() {
         <p>
           <Typography.Text>Learning Rate</Typography.Text> <PrefSlider min={0} max={1} step={0.1} />
         </p>
+        <p>
+          Loss Function
+          <Dropdown trigger={['click']} overlay={
+              <Menu>
+                  {
+                  LossFns.map((func)=>{
+                    <Menu.Item>
+                        Hello {func}
+                    </Menu.Item>
+                  })
+                  }
+              </Menu>
+          }>
+            <Button style={{float: "right"}}>{buttonState}</Button>
+          </Dropdown>
+        </p>
+        <p>
+          Optimizer Function
+          <Dropdown trigger={['click']} overlay={LossFnDropdown}>
+            <Button style={{float: "right"}}>{buttonState}</Button>
+          </Dropdown>
+        </p>
       </div>
     </Card>
   );
 }
 
-function Editor() {
+function Trainer() {
   const {Header, Footer, Sider, Content} = Layout;
   const [collapsed, setcollapsed] = useState(false);
   const [selectedSection, setselectedSection] = useState(0);
@@ -63,7 +111,7 @@ function Editor() {
   return (
     <Layout className="main_container">
       <Header className="header">
-        <Navbar activePage="1" />
+        <Navbar activePage="2" />
       </Header>
       <Layout>
         <Sider collapsible collapsed={collapsed} theme="light" onCollapse={collapseToggle}>
@@ -102,11 +150,7 @@ function Editor() {
           </Menu>
         </Sider>
         <Content>
-          {selectedSection ? <Preferences /> : <ImageRow />}
-          <div style={{display: "none"}}>
-            <ImageRow source={img} />
-            <Empty />
-          </div>
+          <Preferences />
         </Content>
       </Layout>
       <Footer></Footer>
@@ -114,4 +158,4 @@ function Editor() {
   );
 }
 
-export default Editor;
+export default Trainer;

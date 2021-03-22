@@ -1,4 +1,6 @@
-
+.App button {
+  border-radius: 4px !important;
+}
 
 .App-link {
   color: #61dafb;

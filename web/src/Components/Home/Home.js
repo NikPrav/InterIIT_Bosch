@@ -3,6 +3,7 @@ import {Typography, List, Button, Layout, Modal, Card, Space, Dropdown, Menu} fr
 import "./styles.css";
 import {Content} from "antd/lib/layout/layout";
 import Navbar from "../Navbar/Navbar";
+import Checkbox from "antd/lib/checkbox/Checkbox";
 
 function Home() {
   const {Title, Paragraph, Text, Link} = Typography;
@@ -66,17 +67,23 @@ function Home() {
   const handleCancel = () => {
     setisModalVisible(false);
   };
+  const options = [
+    {label: "GermanDataset", value: "GermanDataset"},
+    {label: "IndianDataset", value: "IndianDataset"},
+    {label: "BritishDataset", value: "BritishDataset"},
+  ];
+  const defaultOptions = ["German DataSet"];
+  const onCheckboxChange = checkedValues => {
+    console.log("checked = ", checkedValues);
+  };
   return (
     <Layout>
       <Navbar />
       <Layout.Content className="home-content">
-        <div className="home-heading" >
-          <div style={{textAlign:"center"}}>
-          <Title>Welcome, {user.name} !</Title>
-          <Text strong>Here are your existing workspaces:</Text>
-          <Button onClick={showModal} type="primary" style={{marginLeft: "5px"}}>
-            Create New
-          </Button>
+        <div className="home-heading">
+          <div style={{textAlign: "center"}}>
+            <Title>Welcome, {user.name} !</Title>
+            <Text strong>Here are your existing workspaces:</Text>
           </div>
           <Modal
             title="New Workspace"
@@ -117,6 +124,10 @@ function Home() {
             <Dropdown overlay={menu}>
               <Button>{buttonState}</Button>
             </Dropdown>
+            <Checkbox>German Dataset</Checkbox>
+            <Checkbox>Indian Dataset</Checkbox>
+            <Checkbox>British Dataset</Checkbox>
+            {/*<Checkbox.Group options={options} onChange={onCheckboxChange} defaultValue={['GermanDataset']} />*/}
           </Modal>
 
           <div class="list-container">
@@ -137,6 +148,16 @@ function Home() {
                 </Button>
                 <Button type="primary" style={{float: "right"}} className="button" href="/editor">
                   Test
+                </Button>
+              </List.Item>
+              <List.Item>
+                <Button
+                  type="primary"
+                  style={{float: "right", alignSelf: "flex-end"}}
+                  onClick={showModal}
+                >
+                  {" "}
+                  CREATE NEW
                 </Button>
               </List.Item>
             </List>

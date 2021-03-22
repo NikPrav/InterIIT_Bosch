@@ -6,16 +6,16 @@ function PopupImage(props) {
   const source = props.source;
   const {Meta} = Card;
   const [isModalVisible, setisModalVisible] = useState(false);
-  const [ImageType, setImageType] = useState('dc')
+  const [ImageType, setImageType] = useState("dc");
   const showModal = () => {
     setisModalVisible(true);
   };
 
   const handleTypeofImage = e => {
     // setImageType(ImageType)
-    console.log('radio checked', e.target.value);
+    console.log("radio checked", e.target.value);
     setImageType(e.target.value);
-  }
+  };
 
   const handleOk = () => {
     setisModalVisible(false);
@@ -29,8 +29,8 @@ function PopupImage(props) {
       <Card
         onClick={showModal}
         hoverable
-        style={{maxWidth: 180}}
-        cover={<img alt="example" src={source} maxHeight={50} />}
+        style={{maxWidth: 180, height: 1}}
+        cover={<img alt="example" src={source} maxHeight="45px" height="90px" />}
       ></Card>
       <Modal
         title="Image Properties"
@@ -39,13 +39,13 @@ function PopupImage(props) {
         onCancel={handleCancel}
       >
         <div style={{display: "flex", flexDir: "row"}}>
-          <Image style={{maxHeight: 600 }} src={img} />
-          <Card title="Metadata" style = {{height:300,width:500}}>
+          <Image style={{maxHeight: 600}} src={img} />
+          <Card title="Metadata" style={{height: 300, width: 500}}>
             <p>Training Preference</p>
             <Radio.Group onChange={handleTypeofImage} value={ImageType}>
-              <Radio value={'train'}>Train</Radio>
-              <Radio value={'test'}>Test</Radio>
-              <Radio value={'dc'}>Don't Care</Radio>
+              <Radio value={"train"}>Train</Radio>
+              <Radio value={"test"}>Test</Radio>
+              <Radio value={"dc"}>Don't Care</Radio>
             </Radio.Group>
           </Card>
         </div>

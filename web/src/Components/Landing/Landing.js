@@ -9,7 +9,7 @@ const {Title} = Typography;
 
 function Landing() {
   return (
-    <Layout className="fullpage">
+    <Layout className="fullpage" style={{textAlign: "center"}}>
       {/* <PageHeader className = 'site-page-header' title = 'InterIIT Bosch Traffic Sign Detector' textAlign='center'>
 
             </PageHeader> */}
@@ -19,7 +19,7 @@ function Landing() {
         </Title>
       </Header>
 
-      <Content className="site-layout-content">
+      <Content className="site-layout-content" style={{textAlign: "center"}}>
         <div class="center">
           <Button type="primary" href="/home" size="large">
             Login
