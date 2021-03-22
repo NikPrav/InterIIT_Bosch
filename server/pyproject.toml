@@ -25,6 +25,8 @@ pydantic = {extras = ["dotenv"], version = "^1.8.1"}
 odmantic = "^0.3.4"
 python-jose = "^3.2.0"
 Flask-Cors = "^3.0.10"
+Authlib = "^0.15.3"
+auth0-python = "^3.14.0"
 
 [tool.poetry.dev-dependencies]
 black = "^20.8b1"
