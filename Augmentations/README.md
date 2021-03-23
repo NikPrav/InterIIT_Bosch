@@ -1,12 +1,12 @@
-Use following examples as reference while sending inputs to the function
-Accepted format of inputs to applyAugmentations in final_aug.py
-  * For list of photos with list of augmentation-
+Use following examples as reference while sending inputs to the function<br/>
+Accepted format of inputs to applyAugmentations in final_aug.py<br/>
+  * For list of photos with list of augmentation-<br/>
     meta = {
         "Images/0/00000_00000.ppm": [
             ["add_fog", "hue", "affine_translate"],
             [, "add_rain","affine_shear", "random_contrast", "random_flip"]
         ]
-    }
+    }<br/>
    * For all photos with list of augmentation-
     meta = {
         "Images/": [
