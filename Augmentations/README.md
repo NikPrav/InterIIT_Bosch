@@ -7,6 +7,13 @@ Accepted format of inputs to applyAugmentations in final_aug.py<br/>
             [, "add_rain","affine_shear", "random_contrast", "random_flip"]
         ]
     }<br/>
+   * For list of photos with random augmentation-<br/>
+    meta = {
+        "Images/0/00000_00000.ppm": [
+            ["random"]
+        ]
+    }<br/>
+    <br/>
    * For all photos with list of augmentation-<br/>
     meta = {
         "Images/": [
