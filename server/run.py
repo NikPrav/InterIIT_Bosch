@@ -90,13 +90,13 @@ def public():
 @app.route("/api/private")
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
-def private():
+def private(email):
     # json_response = {'Test' : 'haie','yo':'why'}
     response = "token"
-    app.logger.info(f'hi2{response}')
+    app.logger.info(email)
 
     # app.logger.info(token)
-    return jsonify(message = response)
+    return jsonify(message = email)
 
 # This needs authorization
 @app.route("/api/private-scoped")
