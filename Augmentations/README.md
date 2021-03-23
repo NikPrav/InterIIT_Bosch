@@ -23,7 +23,6 @@ Accepted format of inputs to applyAugmentations in final_aug.py<br/>
         ]
     }<br/>
     <br/>
-    
     * For all photos with random augmentation-<br/>
     meta = {
         "Images/": [
