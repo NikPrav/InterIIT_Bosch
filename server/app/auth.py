@@ -24,6 +24,7 @@ class AuthError(Exception):
 def get_token_auth_header():
     """Obtains the Access Token from the Authorization Header"""
     auth = request.headers.get("Authorization", None)
+    ustub = request.headers.get("User_sub", None)
     if not auth:
         raise AuthError(
             {
@@ -57,7 +58,7 @@ def get_token_auth_header():
         )
 
     token = parts[1]
-    return token
+    return token,auth,ustub
 
 
 def requires_auth(f):
@@ -65,7 +66,7 @@ def requires_auth(f):
 
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = get_token_auth_header()
+        token,auth,ustub = get_token_auth_header()
         jsonurl = urlopen("https://" + AUTH0_DOMAIN + "/.well-known/jwks.json")
         jwks = json.loads(jsonurl.read())
         unverified_header = jwt.get_unverified_header(token)
@@ -88,8 +89,11 @@ def requires_auth(f):
                     audience=API_AUDIENCE,
                     issuer="https://" + AUTH0_DOMAIN + "/",
                 )
-                # headers = {'Content-Type': 'application/json; charset=utf-8'}
-                # response = requests.get("https://dev-kqx4v2yr.jp.auth0.com/api/v2/users/${user.sub}", headers=headers)
+                # app.logger.info('Before headers')
+                # headers = {'Authorization':auth}
+                # response = requests.get(f"https://dev-kqx4v2yr.jp.auth0.com/api/v2/users/{ustub}", headers=headers)
+                # app.logger.info(headers)
+                # app.logger.info(response)
             except jwt.ExpiredSignatureError:
                 raise AuthError(
                     {"code": "token_expired", "description": "token is expired"}, 401

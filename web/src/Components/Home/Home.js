@@ -30,26 +30,13 @@ function Home() {
           audience: `https://dev-kqx4v2yr.jp.auth0.com/api/v2/`,
           scope: "read:current_user",
         });
-        
-        // console.log('hel')
-
-        // const aToken = accessToken
-        // console.log(accessToken)
         const UrlToSendDataTo = `http://localhost:5000/api/private`;
-        const userDetailsByIdUrl = `https://${domain}/api/v2/users/${user.sub}`
-        // const userDetailsByIdUrl = `https://testapi/api/api/v2/users/${user.sub}`
-        // console.log(userDetailsByIdUrl) 
-        // const metadataResponse = await fetch(userDetailsByIdUrl, {
-        //   headers: {
-        //     Authorization: `Bearer ${accessToken}`,
-        //   },
-        // }); 
-        // const user_metadata  = await metadataResponse.json();
-        // setUserMetadata(user_metadata);
+        ;
 
         const CallPrivateApi = await fetch(UrlToSendDataTo, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
+            User_sub:`${user.sub}`,
           },
         });
         const { message } = await CallPrivateApi.json();
@@ -61,14 +48,10 @@ function Home() {
   
     getUserMetadata();
   };
-
-
-  // callApi();
-  // Placeholder end
-  useEffect((user) => {  
+  useEffect((user) =>  {  
     console.log('Callign API')  
     callApi();  
-  },[]);
+  },[user]);
 
 
   const menu = (

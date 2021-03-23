@@ -2,11 +2,11 @@
 import base64
 from io import BytesIO
 
-import torchvision.transforms as transforms
+# import torchvision.transforms as transforms
 from flask import jsonify, request
 from PIL import Image
 
-from app import app, torchcommands, auth
+from app import app,  auth
 from app.auth import *
 
 
@@ -91,8 +91,10 @@ def public():
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
 def private():
-    json_response = {'Test' : 'haie','yo':'why'}
+    # json_response = {'Test' : 'haie','yo':'why'}
     response = "token"
+    app.logger.info(f'hi2{response}')
+
     # app.logger.info(token)
     return jsonify(message = response)
 
