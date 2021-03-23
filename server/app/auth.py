@@ -9,7 +9,7 @@ from jose import jwt
 
 
 AUTH0_DOMAIN = "dev-kqx4v2yr.jp.auth0.com"
-API_AUDIENCE = "https://testapi/api"
+API_AUDIENCE = "https://dev-kqx4v2yr.jp.auth0.com/api/v2/"
 ALGORITHMS = ["RS256"]
 
 
@@ -88,6 +88,8 @@ def requires_auth(f):
                     audience=API_AUDIENCE,
                     issuer="https://" + AUTH0_DOMAIN + "/",
                 )
+                # headers = {'Content-Type': 'application/json; charset=utf-8'}
+                # response = requests.get("https://dev-kqx4v2yr.jp.auth0.com/api/v2/users/${user.sub}", headers=headers)
             except jwt.ExpiredSignatureError:
                 raise AuthError(
                     {"code": "token_expired", "description": "token is expired"}, 401

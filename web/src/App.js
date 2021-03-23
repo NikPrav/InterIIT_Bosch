@@ -14,7 +14,7 @@ function App() {
       domain="dev-kqx4v2yr.jp.auth0.com"
       clientId="DBJyWZCoiZFCccUM5C50YYSPrBXn08oL"
       redirectUri={'http://localhost:3000/home'}
-      audience = 'https://testapi/api'
+      audience = 'https://dev-kqx4v2yr.jp.auth0.com/api/v2/'
       scope = "read:current_user update:current_user_metadata">
         <Router>
           <Switch>

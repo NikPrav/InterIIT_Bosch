@@ -6,47 +6,69 @@ import Navbar from "../Navbar/Navbar";
 import { useAuth0 } from "@auth0/auth0-react";
 
 
+
 function Home() {
   const {Title, Paragraph, Text, Link} = Typography;
   const [buttonState, setButtonState] = useState("German DataSet");
   // const user = {name: "Rachit"};
-  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const { user, isAuthenticated, getAccessTokenSilently } =  useAuth0();
   const [userMetadata, setUserMetadata] = useState(null);
 
+  const [ LogStatus, setLogStatus ] = useState(0);
+  
+  console.log(user)
   // Code for calling a private url in the api when logged in
   // Placeholder, can be changed out to pull workspace data/ whatever that pops into your mind 
-  useEffect(() => {
+  const callApi = async () => { 
     const getUserMetadata = async () => {
+
+      // console.log(user)
       const domain = "dev-kqx4v2yr.jp.auth0.com";
   
       try {
         const accessToken = await getAccessTokenSilently({
-          audience: `https://testapi/api`,
+          audience: `https://dev-kqx4v2yr.jp.auth0.com/api/v2/`,
           scope: "read:current_user",
         });
         
-        console.log(accessToken)
-        const userDetailsByIdUrl = `http://localhost:5000/api/private`;
-  
-        const metadataResponse = await fetch(userDetailsByIdUrl, {
+        // console.log('hel')
+
+        // const aToken = accessToken
+        // console.log(accessToken)
+        const UrlToSendDataTo = `http://localhost:5000/api/private`;
+        const userDetailsByIdUrl = `https://${domain}/api/v2/users/${user.sub}`
+        // const userDetailsByIdUrl = `https://testapi/api/api/v2/users/${user.sub}`
+        // console.log(userDetailsByIdUrl) 
+        // const metadataResponse = await fetch(userDetailsByIdUrl, {
+        //   headers: {
+        //     Authorization: `Bearer ${accessToken}`,
+        //   },
+        // }); 
+        // const user_metadata  = await metadataResponse.json();
+        // setUserMetadata(user_metadata);
+
+        const CallPrivateApi = await fetch(UrlToSendDataTo, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         });
-        
-  
-        const { message } = await metadataResponse.json();
-        console.log(message)
-        // console.log(JSON.parse(response))
-        // setUserMetadata(user_metadata);
+        const { message } = await CallPrivateApi.json();
+        console.log(`Message:${message}`)
       } catch (e) {
-        console.log(e.message);
+        console.log(`Error:${e.message}`);
       }
     };
   
     getUserMetadata();
-  }, []);
+  };
+
+
+  // callApi();
   // Placeholder end
+  useEffect((user) => {  
+    console.log('Callign API')  
+    callApi();  
+  },[]);
 
 
   const menu = (
@@ -118,6 +140,9 @@ function Home() {
           <Text strong>Here are your existing workspaces:</Text>
           <Button onClick={showModal} type="primary" style={{marginLeft: "5px"}}>
             Create New
+          </Button>
+          <Button onClick={callApi} type="primary" style={{marginLeft: "5px"}}>
+            Call api cos fuck you
           </Button>
           </div>
           <Modal

@@ -92,8 +92,8 @@ def public():
 @requires_auth
 def private():
     json_response = {'Test' : 'haie','yo':'why'}
-    response = "Hello from a private endpoint! You need to be authenticated to see this."
-    # app.logger.info(response)
+    response = "token"
+    # app.logger.info(token)
     return jsonify(message = response)
 
 # This needs authorization
