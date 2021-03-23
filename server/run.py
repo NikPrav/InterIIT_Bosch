@@ -2,11 +2,12 @@
 import base64
 from io import BytesIO
 
+import torchcommands
 import torchvision.transforms as transforms
-from flask import jsonify, request
+from flask import Flask, jsonify, request
 from PIL import Image
 
-from app import app, torchcommands
+app = Flask(__name__)
 
 
 @app.route("/success/")
