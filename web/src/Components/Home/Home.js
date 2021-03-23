@@ -99,20 +99,12 @@ function Home() {
                 Cancel
               </Button>,
               <Button
-                key="train"
-                href="/editor"
-                type="primary"
-                style={{paddingRight: "5px", paddingLeft: "5px", marginRight: "5px"}}
-              >
-                Train
-              </Button>,
-              <Button
                 key="edit"
                 href="/editor"
                 type="primary"
                 style={{paddingRight: "5px", paddingLeft: "5px", marginRight: "5px"}}
               >
-                Edit Dataset
+                Create
               </Button>,
             ]}
           >
@@ -122,7 +114,7 @@ function Home() {
             </p>
             Choose a dataset below to get started:{" "}
             <Dropdown overlay={menu}>
-              <Button>{buttonState}</Button>
+              <Button style={{minWidth: "30px"}}>{buttonState}</Button>
             </Dropdown>
             <Checkbox>German Dataset</Checkbox>
             <Checkbox>Indian Dataset</Checkbox>
@@ -135,19 +127,25 @@ function Home() {
               <List.Item>
                 <Text>1.</Text>Default Workspace
                 <Button type="primary" style={{float: "right"}} className="button" href="/editor">
-                  Edit
+                  Use
                 </Button>
-                <Button type="primary" style={{float: "right"}} className="button" href="/editor">
-                  Test
+                <Button
+                  type="danger"
+                  disabled
+                  style={{float: "right"}}
+                  className="button"
+                  href="/editor"
+                >
+                  Delete
                 </Button>
               </List.Item>
               <List.Item>
                 <Text>2.</Text>Yet Another Workspace
                 <Button type="primary" style={{float: "right"}} className="button" href="/editor">
-                  Edit
+                  Use
                 </Button>
-                <Button type="primary" style={{float: "right"}} className="button" href="/editor">
-                  Test
+                <Button type="danger" style={{float: "right"}} className="button" href="/editor">
+                  Delete
                 </Button>
               </List.Item>
               <List.Item>

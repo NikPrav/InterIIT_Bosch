@@ -95,7 +95,7 @@ function Preferences() {
         <p>
           Loss Function
           <Dropdown trigger={["click"]} overlay={LossFnDropdown}>
-            <Button style={{float: "right"}}>{buttonState}</Button>
+            <Button style={{float: "right", minWidth: "10vw"}}>{buttonState}</Button>
           </Dropdown>
         </p>
         <p>
@@ -146,7 +146,6 @@ function Trainer() {
               {" "}
               Settings
             </Menu.Item>
-
             <Menu.Item key="3" icon={<GoGraph />}>
               {" "}
               Graph

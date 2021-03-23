@@ -45,7 +45,12 @@ function ImageRow(props) {
         <Col style={{minWidth: "90px"}}>
           <PopupImage source={img} />
         </Col>
-
+        <Col style={{minWidth: "90px"}}>
+          <PopupImage source={img} />
+        </Col>
+        <Col style={{minWidth: "90px"}}>
+          <PopupImage source={img} />
+        </Col>
         <Col style={{minWidth: "90px"}}>
           <PopupImage source={img} />
         </Col>
@@ -61,15 +66,6 @@ function ImageRow(props) {
         <Col style={{minWidth: "90px"}}>
           <PopupImage source={img} />
         </Col>
-
-        <Col style={{minWidth: "90px"}}>
-          <PopupImage source={img} />
-        </Col>
-
-        <Col style={{minWidth: "90px"}}>
-          <PopupImage source={img} />
-        </Col>
-
         <Col style={{minWidth: "90px"}}>
           <PopupImage source={img} />
         </Col>
