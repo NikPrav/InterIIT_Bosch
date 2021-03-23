@@ -1,46 +1,27 @@
 import base64
+from datetime import datetime
 import json
 import typing as t
 from functools import wraps
 from io import BytesIO
+
 # from six.moves.urllib.request import urlopen
 from urllib.request import urlopen
 
-import torchcommands
 import torchvision.transforms as transforms
-from configs import cnf
 from flask import Flask, _request_ctx_stack, jsonify, request
 from flask_cors import cross_origin
 from jose import jwt
-from models import Dataset, Globals, Info, Workspace
 from PIL import Image
+from pydantic import ValidationError
 from werkzeug.datastructures import Headers
 from werkzeug.wrappers import BaseResponse
+import requests
 
-_str_bytes = t.Union[str, bytes]
-_data_type = t.Union[
-    _str_bytes,
-    BaseResponse,
-    t.Dict[str, t.Any],
-    t.Callable[
-        [t.Dict[str, t.Any], t.Callable[[str, t.List[t.Tuple[str, str]]], None]],
-        t.Iterable[bytes],
-    ],
-]
-_status_type = t.Union[int, _str_bytes]
-_headers_type = t.Union[
-    Headers,
-    t.Dict[_str_bytes, _str_bytes],
-    t.Iterable[t.Tuple[_str_bytes, _str_bytes]],
-]
-
-view_return_type = t.Union[
-    _data_type,
-    t.Tuple[_data_type],
-    t.Tuple[_data_type, _status_type],
-    t.Tuple[_data_type, _headers_type],
-    t.Tuple[_data_type, _status_type, _headers_type],
-]
+import torchcommands
+from configs import cnf
+from dbmodels import Dataset, Globals, Info, Workspace
+from req_models import WorkspaceCreate
 
 app = Flask(__name__)
 
@@ -51,34 +32,25 @@ img_path = "/workspaces/<string:workspace_id>/images/<string:image_id>"
 
 rpc_call = lambda: {"state": "success"}
 
-AUTH0_DOMAIN = "https://dev-aims-clone.eu.auth0.com"
-API_AUDIENCE = "meh"
+app = Flask(__name__)
+
+AUTH0_DOMAIN = "dev-kqx4v2yr.jp.auth0.com"
+API_AUDIENCE = "https://dev-kqx4v2yr.jp.auth0.com/api/v2/"
 ALGORITHMS = ["RS256"]
 
-APP = Flask(__name__)
 
-# Error handler
 class AuthError(Exception):
     def __init__(self, error, status_code):
         self.error = error
         self.status_code = status_code
 
 
-@app.errorhandler(AuthError)
-def handle_auth_error(ex):
-    response = jsonify(ex.error)
-    response.status_code = ex.status_code
-    return response
-
-
-@app.errorhandler(404)
-def not_found(e):
-    return app.send_static_file("../web/build/index.html")
-
-
+# Verifies Access Tokes against your JWKS
+# Format error response and append status code
 def get_token_auth_header():
     """Obtains the Access Token from the Authorization Header"""
     auth = request.headers.get("Authorization", None)
+    ustub = request.headers.get("User_sub", None)
     if not auth:
         raise AuthError(
             {
@@ -112,7 +84,7 @@ def get_token_auth_header():
         )
 
     token = parts[1]
-    return token
+    return token, auth, ustub
 
 
 def requires_auth(f):
@@ -120,11 +92,12 @@ def requires_auth(f):
 
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = get_token_auth_header()
+
+        token, auth, ustub = get_token_auth_header()
         jsonurl = urlopen("https://" + AUTH0_DOMAIN + "/.well-known/jwks.json")
         jwks = json.loads(jsonurl.read())
         unverified_header = jwt.get_unverified_header(token)
-        rsa_key = {}
+
         for key in jwks["keys"]:
             if key["kid"] == unverified_header["kid"]:
                 rsa_key = {
@@ -143,6 +116,15 @@ def requires_auth(f):
                     audience=API_AUDIENCE,
                     issuer="https://" + AUTH0_DOMAIN + "/",
                 )
+                # headers = {"Authorization": auth}
+                # response = requests.get(
+                #     f"https://dev-kqx4v2yr.jp.auth0.com/api/v2/users/{ustub}",
+                #     headers=headers,
+                # )
+                # response_json = response.json()
+                # email = response_json.get("email")
+                email = "ch17btech11023@iith.ac.in"
+
             except jwt.ExpiredSignatureError:
                 raise AuthError(
                     {"code": "token_expired", "description": "token is expired"}, 401
@@ -166,7 +148,7 @@ def requires_auth(f):
                 )
 
             _request_ctx_stack.top.current_user = payload
-            return f(*args, **kwargs)
+            return f(email, *args, **kwargs)
         raise AuthError(
             {"code": "invalid_header", "description": "Unable to find appropriate key"},
             401,
@@ -175,7 +157,25 @@ def requires_auth(f):
     return decorated
 
 
-email = "ch17btech11023@iith.ac.in"
+# Looking for a particular scope in the Access Token
+def requires_scope(required_scope):
+    """Determines if the required scope is present in the Access Token
+    Args:
+        required_scope (str): The scope required to access the resource
+    """
+    token = get_token_auth_header()
+    unverified_claims = jwt.get_unverified_claims(token)
+    if unverified_claims.get("scope"):
+        token_scopes = unverified_claims["scope"].split()
+        for token_scope in token_scopes:
+            if token_scope == required_scope:
+                return True
+    return False
+
+
+@app.errorhandler(404)
+def not_found(e):
+    return app.send_static_file("../web/build/index.html")
 
 
 @app.route("/info", methods=["GET"])
@@ -185,27 +185,49 @@ def get_project_info():
 
 
 @app.route("/workspaces", methods=["GET"])
-def get_workspaces():
+def get_workspaces(email):
     workspaces = Workspace.objects(user_email=email).only(
-        "name", "datasets", "added_images"
+        "name",
+        "datasets",
+        "added_images",
+        "workspace_id",
     )
     return workspaces
 
 
 @app.route("/workspaces", methods=["POST"])
-def create_workspace():
-    workspace = Workspace()
-    return info
+def create_workspace(email):
+    json_data = request.get_json()
+    if not json_data:
+        return {"message": "No input data provided"}, 400
+    try:
+        data = WorkspaceCreate(**json_data).dict()
+        app.logger.info("%s", data)
+    except ValidationError as e:
+        app.logger.info("%s", e)
+        return {"message": "Wrong input data provided"}, 400
+    if Workspace.objects(user_email=email).count() >= 10:
+        return {"message": "You have reached the limit in number of workspaces."}, 400
+    num = Workspace.objects.count() + 1
+    workspace = Workspace(
+        **data,
+        user_email=email,
+        created_at=datetime.utcnow(),
+        updated_at=datetime.utcnow(),
+        workspace_id=num,
+    )
+    workspace.save()
+    return workspace.to_json()
 
 
 @app.route("/workspaces/<int:workspace_id>", methods=["GET"])
-def get_workspace(workspace_id: str):
-    info = {}
+def get_workspace(email, workspace_id: str):
+    info = Workspace.objects(workspace_id=workspace_id).to_json()
     return info
 
 
 @app.route("/workspaces/<int:workspace_id>", methods=["PATCH"])
-def edit_workspace(workspace_id: str):
+def edit_workspace(email, workspace_id: str):
     info = {}
     return info
 
