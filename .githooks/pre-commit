@@ -9,3 +9,5 @@ echo $GIT_DIR
   `git diff --diff-filter=d --cached --name-only | grep -E '^.*\.(py)' | xargs`)
 (cd $(git rev-parse --show-toplevel)  && isort \
   `git diff --diff-filter=d --cached --name-only | grep -E '^.*\.(py)' | xargs`)
+
+(cd $(git rev-parse --show-toplevel) && git add *)

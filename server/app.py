@@ -8,6 +8,7 @@ from urllib.request import urlopen
 
 import torchcommands
 import torchvision.transforms as transforms
+from configs import cnf
 from flask import Flask, _request_ctx_stack, jsonify, request
 from flask_cors import cross_origin
 from jose import jwt
@@ -50,8 +51,8 @@ img_path = "/workspaces/<string:workspace_id>/images/<string:image_id>"
 
 rpc_call = lambda: {"state": "success"}
 
-AUTH0_DOMAIN = "YOUR_DOMAIN"
-API_AUDIENCE = "YOUR_API_AUDIENCE"
+AUTH0_DOMAIN = "https://dev-aims-clone.eu.auth0.com"
+API_AUDIENCE = "meh"
 ALGORITHMS = ["RS256"]
 
 APP = Flask(__name__)
@@ -174,6 +175,9 @@ def requires_auth(f):
     return decorated
 
 
+email = "ch17btech11023@iith.ac.in"
+
+
 @app.route("/info", methods=["GET"])
 def get_project_info():
     info = Info.objects.exclude("_id").to_json()
@@ -182,13 +186,15 @@ def get_project_info():
 
 @app.route("/workspaces", methods=["GET"])
 def get_workspaces():
-    info = {}
-    return info
+    workspaces = Workspace.objects(user_email=email).only(
+        "name", "datasets", "added_images"
+    )
+    return workspaces
 
 
 @app.route("/workspaces", methods=["POST"])
 def create_workspace():
-    info = {}
+    workspace = Workspace()
     return info
 
 
