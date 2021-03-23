@@ -1,6 +1,6 @@
 import cv2 as cv2
 import numpy as np
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import random
 import math
 from PIL import ImageEnhance
@@ -30,12 +30,12 @@ def rotate(image):
 def affine_shear(image):
 	x = np.random.uniform(-0.2,0.2)
 	tform = AffineTransform(rotation = x,shear = 0.5)
-	return warp(image, tform.inverse)
+	return (255*warp(image, tform.inverse)).astype(np.unit8)
 
 def affine_translate(image):
 	x = np.random.uniform(-0.2,0.2)
 	tform = AffineTransform(rotation= x, translation=(5,-5))
-	return warp(image, tform.inverse)
+	return (255*warp(image, tform.inverse)).astype(np.unit8)
 
 ###################### HLS #############################
 
@@ -59,7 +59,7 @@ def hue(image,src='RGB'):
             image_Hue.append(hls(img,src)[:,:,0])
     else:
         image_Hue= hls(image,src)[:,:,0]
-    return image_Hue
+    return cv2.applyColorMap(image_Hue, cv2.COLORMAP_VIRIDIS)
 
 def lightness(image,src='RGB'):
     verify_image(image)
@@ -70,7 +70,7 @@ def lightness(image,src='RGB'):
             image_lightness.append(hls(img,src)[:,:,1])
     else:
         image_lightness= hls(image,src)[:,:,1]
-    return image_lightness
+    return cv2.applyColorMap(image_lightness, cv2.COLORMAP_VIRIDIS)
 
 def saturation(image,src='RGB'):
     verify_image(image)
@@ -81,7 +81,7 @@ def saturation(image,src='RGB'):
             image_saturation.append(hls(img,src)[:,:,2])
     else:
         image_saturation= hls(image,src)[:,:,2]
-    return image_saturation
+    return cv2.applyColorMap(image_saturation, cv2.COLORMAP_VIRIDIS)
 
 #######################################################
 
@@ -357,7 +357,8 @@ def add_sun_process(image, no_of_flare_circles,flare_center,src_radius,x,y,src_c
     for i in range(no_of_flare_circles):
         alpha=random.uniform(0.05,0.2)
         r=random.randint(0, len(x)-1)
-        rad=random.randint(1, imshape[0]//100-2)
+        # print(imshape[0]//100-2)
+        rad=random.randint(1, int(np.clip(imshape[0]//100-2,2,np.inf)))
         cv2.circle(overlay,(int(x[r]),int(y[r])), rad*rad*rad, (random.randint(max(src_color[0]-50,0), src_color[0]),random.randint(max(src_color[1]-50,0), src_color[1]),random.randint(max(src_color[2]-50,0), src_color[2])), -1)
         cv2.addWeighted(overlay, alpha, output, 1 - alpha,0, output)                      
     output= flare_source(output,(int(flare_center[0]),int(flare_center[1])),src_radius,src_color)
@@ -415,11 +416,11 @@ def apply_motion_blur(image,count):
     kernel_motion_blur = np.zeros((size, size))
     kernel_motion_blur[int((size-1)/2), :] = np.ones(size)
     kernel_motion_blur = kernel_motion_blur / size
-    i= imshape[1]*3//4 - 10*count
+    i = int(imshape[1]*3//4 - 10*count)
     while(i<=imshape[1]):
         image_t[:,i:,:] = cv2.filter2D(image_t[:,i:,:], -1, kernel_motion_blur)
         image_t[:,:imshape[1]-i,:] = cv2.filter2D(image_t[:,:imshape[1]-i,:], -1, kernel_motion_blur)
-        i+=imshape[1]//25-count
+        i+=imshape[1]-count
         count+=1
     image_RGB=image_t
     return image_RGB
@@ -441,7 +442,7 @@ def add_speed(image, speed_coeff=-1):
             image_RGB.append(img)
     else:
         if(speed_coeff==-1):
-            count_t=int(15*random.uniform(0,1))
+            count_t=random.uniform(0,1)
         else:
             count_t=int(15*speed_coeff)
         image_RGB= apply_motion_blur(image,count_t)
