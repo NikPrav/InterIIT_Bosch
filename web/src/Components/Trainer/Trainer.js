@@ -3,6 +3,7 @@ import Navbar from "../Navbar/Navbar";
 import {Layout, Header, Dropdown, Button, Typography, Menu, Card, Slider} from "antd";
 import {DesktopOutlined, FolderAddFilled} from "@ant-design/icons";
 import {IoSettingsSharp} from "react-icons/io5";
+import {GoGraph} from "react-icons/go";
 
 function PrefSlider(props) {
   const {max, min, step} = props;
@@ -11,51 +12,68 @@ function PrefSlider(props) {
     setSliderValue(val);
   };
   return (
-    <div style={{maxWidth: "600px", float: "right", width: "600px"}}>
+    <div style={{maxWidth: "32vw", float: "right", width: "600px"}}>
       <Slider min={min} max={max} step={step} value={sliderValue} onChange={handleChange} />
     </div>
   );
 }
 
 function Preferences() {
-  const [buttonState, setButtonState] = useState("German DataSets");
+  const [buttonState, setButtonState] = useState("CategoricalCrossEntropy");
+  const [optimizerfn, setoptimizerfn] = useState("Sgd");
   const LossFns = ["CategoricalCrossEntropy", "MeanSquaredError"];
-  
-  const Simple = (item) => {
-    <Menu.Item>
-        {item}
-    </Menu.Item>
+
+  const Simple = item => {
+    <Menu.Item>{item}</Menu.Item>;
   };
   const LossFnDropdown = (
     <Menu>
       <Menu.Item
         onClick={() => {
-          setButtonState("German DataSet");
+          setButtonState("CategoricalCrossEntropy");
         }}
       >
-        German DataSet
+        CategoricalCrossEntropy
       </Menu.Item>
       <Menu.Item
         onClick={() => {
-          setButtonState("British DataSet");
+          setButtonState("MeanSquaredError");
         }}
       >
-        British DataSet
+        MeanSquaredError
+      </Menu.Item>
+    </Menu>
+  );
+  const OptimizerDropdown = (
+    <Menu>
+      <Menu.Item
+        onClick={() => {
+          setoptimizerfn("Sgd");
+        }}
+      >
+        Sgd
       </Menu.Item>
       <Menu.Item
         onClick={() => {
-          setButtonState("Indian DataSet");
+          setoptimizerfn("Momentum");
         }}
       >
-        Indian DataSet
+        Momentum
+      </Menu.Item>
+      <Menu.Item
+        onClick={() => {
+          setoptimizerfn("Adagrad");
+        }}
+      >
+        Adagrad
       </Menu.Item>
       <Menu.Item
         danger
         onClick={() => {
-          setButtonState("Blank DataSet");
+          setoptimizerfn("Rmsprop");
         }}
       >
-        Blank DataSet
+        Rmsprop
       </Menu.Item>
     </Menu>
   );
@@ -76,24 +94,14 @@ function Preferences() {
         </p>
         <p>
           Loss Function
-          <Dropdown trigger={['click']} overlay={
-              <Menu>
-                  {
-                  LossFns.map((func)=>{
-                    <Menu.Item>
-                        Hello {func}
-                    </Menu.Item>
-                  })
-                  }
-              </Menu>
-          }>
+          <Dropdown trigger={["click"]} overlay={LossFnDropdown}>
             <Button style={{float: "right"}}>{buttonState}</Button>
           </Dropdown>
         </p>
         <p>
           Optimizer Function
-          <Dropdown trigger={['click']} overlay={LossFnDropdown}>
-            <Button style={{float: "right"}}>{buttonState}</Button>
+          <Dropdown trigger={["click"]} overlay={OptimizerDropdown}>
+            <Button style={{float: "right"}}>{optimizerfn}</Button>
           </Dropdown>
         </p>
       </div>
@@ -138,19 +146,18 @@ function Trainer() {
               {" "}
               Settings
             </Menu.Item>
-            <Menu.Item key="6" icon={<DesktopOutlined />}>
-              {" "}
-              Augmentation
-            </Menu.Item>
 
-            <Menu.Item key="7" icon={<DesktopOutlined />}>
+            <Menu.Item key="3" icon={<GoGraph />}>
               {" "}
               Graph
             </Menu.Item>
           </Menu>
         </Sider>
         <Content>
-          <Preferences />
+          <Card style={{minHeight: "100vh"}}>
+            <Preferences />
+            <Button type="primary">Trainer</Button>
+          </Card>
         </Content>
       </Layout>
       <Footer></Footer>

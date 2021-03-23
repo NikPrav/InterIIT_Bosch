@@ -15,7 +15,7 @@ function PrefSlider(props) {
     setSliderValue(val);
   };
   return (
-    <div style={{maxWidth: "600px", float: "right", width: "600px"}}>
+    <div style={{maxWidth: "600px", float: "right", width: "31vw"}}>
       <Slider min={min} max={max} step={step} value={sliderValue} onChange={handleChange} />
     </div>
   );
@@ -42,12 +42,6 @@ function Preferences() {
         <p>
           <Typography.Text>Batch Size:</Typography.Text> <PrefSlider min={1} max={20} step={1} />
         </p>
-        <p>
-          <Typography.Text>Epochs</Typography.Text> <PrefSlider min={1} max={20} step={1} />
-        </p>
-        <p>
-          <Typography.Text>Learning Rate</Typography.Text> <PrefSlider min={0} max={1} step={0.1} />
-        </p>
       </div>
     </Card>
   );
@@ -62,9 +56,7 @@ function Editor() {
   };
   return (
     <Layout className="main_container">
-      <Header className="header">
-        <Navbar activePage="1" />
-      </Header>
+      <Navbar activePage="1" />
       <Layout>
         <Sider collapsible collapsed={collapsed} theme="light" onCollapse={collapseToggle}>
           <Menu theme="light" mode="inline">
@@ -78,8 +70,7 @@ function Editor() {
               {" "}
               Import
             </Menu.Item>
-            {/*
-             */}
+
             <Menu.Item
               key="1"
               icon={<IoSettingsSharp />}
@@ -94,19 +85,16 @@ function Editor() {
               {" "}
               Augmentation
             </Menu.Item>
-
             <Menu.Item key="7" icon={<DesktopOutlined />}>
               {" "}
               Graph
             </Menu.Item>
           </Menu>
         </Sider>
-        <Content>
-          {selectedSection ? <Preferences /> : <ImageRow />}
-          <div style={{display: "none"}}>
-            <ImageRow source={img} />
-            <Empty />
-          </div>
+        <Content style={{marginTop: "40px", marginLeft: "10px"}}>
+          <Card style={{minHeight: "100vh"}}>
+            {selectedSection ? <Preferences /> : <ImageRow />}
+          </Card>
         </Content>
       </Layout>
       <Footer></Footer>
