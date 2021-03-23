@@ -1,5 +1,5 @@
 import react from "react";
-import {Button, PageHeader, Typography} from "antd";
+import {Button, Card, PageHeader, Typography} from "antd";
 import Layout, {Content, Footer, Header} from "antd/lib/layout/layout";
 import {FontColorsOutlined} from "@ant-design/icons";
 import "./styles.css";
@@ -28,12 +28,17 @@ function Landing() {
 
       <Content className="site-layout-content">
         <div class="center">
-          <Button onClick={() => loginWithRedirect()}  type="primary"  size="large">
-            Login
-          </Button>
-          <div style={{textAlign: "center"}}>
-            Press button to login, and add start training to make it look cool.
+          <Card 
+          title ={<Title level={3}>Continue with OAuth0</Title>} 
+          style={{width : '40vh', alignItems:'center', height:'40vh'}}
+          hoverable='True'> 
+          <div style={{display: 'flex',justifyContent: 'center' ,alignItems: 'center', padding:'10vh'}}>
+            <Button onClick={() => loginWithRedirect()}  type="primary"  size="large" style={{align:'center'}}>
+              Login
+            </Button> <br/>
           </div>
+          
+          </Card>
         </div>
       </Content>
 

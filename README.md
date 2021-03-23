@@ -56,6 +56,8 @@ git config --local include.path ../.gitconfig
 
 For mongo, follow instructions on Mongo website.
 
+[REM] Remove hardcoded domain names for Auth0 from both web and server ends
+
 ### Installing
 
 ## Authors

@@ -6,7 +6,8 @@ import torchvision.transforms as transforms
 from flask import jsonify, request
 from PIL import Image
 
-from app import app, torchcommands
+from app import app, torchcommands, auth
+from app.auth import *
 
 
 @app.route("/success/")
@@ -66,6 +67,57 @@ def savingpic():
     tr_image = base64.b64encode(buffered.getvalue())
     tr_image = tr_image.decode("ascii")
     return jsonify(image=tr_image)
+
+
+# Authorsation code
+@app.errorhandler(AuthError)
+def handle_auth_error(ex):
+    response = jsonify(ex.error)
+    response.status_code = ex.status_code
+    return response
+
+# Setting up public, private and private-scoped endpoints
+# Place holders, so change as needed
+# https://auth0.com/docs/quickstart/backend/python/01-authorization#validate-access-tokens
+
+@app.route("/api/public")
+@cross_origin(headers=["Content-Type", "Authorization"])
+def public():
+    response = "Hello from a public endpoint! You don't need to be authenticated to see this."
+    return jsonify(message=response)
+
+# This needs authentication
+@app.route("/api/private")
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def private():
+    json_response = {'Test' : 'haie','yo':'why'}
+    response = "Hello from a private endpoint! You need to be authenticated to see this."
+    # app.logger.info(response)
+    return jsonify(message = response)
+
+# This needs authorization
+@app.route("/api/private-scoped")
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def private_scoped():
+    if requires_scope("read:current_user"):
+        response = "Hello from a private endpoint! You need to be authenticated and have a scope of read:messages to see this."
+        return jsonify(message=response)
+    raise AuthError({
+        "code": "Unauthorized",
+        "description": "You don't have access to this resource"
+    }, 403)
+
+
+
+
+
+
+
+
+
+
 
 
 if __name__ == "__main__":

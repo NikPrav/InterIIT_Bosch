@@ -18,15 +18,13 @@ function Navbar() {
         {/*
         <Avatar>
             R
-        </Avatar>
-        <Button>
-            Sign out
-        </Button>
-*/}
-      </Menu>
-      <Button  style ={{float:'right'}} onClick = {() => logout({  returnTo: 'http://localhost:3000/logout' })}>
+        </Avatar>*/}
+        <Button type='danger' style ={{float:'right'}} onClick = {() => logout({  returnTo: 'http://localhost:3000/' })}>
         Logout
       </Button>
+
+      </Menu>
+      
     </Layout.Header>
   );
 }

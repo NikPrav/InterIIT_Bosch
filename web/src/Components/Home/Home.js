@@ -1,4 +1,4 @@
-import react, {useState} from "react";
+import react, {useEffect, useState} from "react";
 import {Typography, List, Button, Layout, Modal, Card, Space, Dropdown, Menu} from "antd";
 import "./styles.css";
 import {Content} from "antd/lib/layout/layout";
@@ -10,7 +10,44 @@ function Home() {
   const {Title, Paragraph, Text, Link} = Typography;
   const [buttonState, setButtonState] = useState("German DataSet");
   // const user = {name: "Rachit"};
-  const { user, isAuthenticated, isLoading } = useAuth0();
+  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const [userMetadata, setUserMetadata] = useState(null);
+
+  // Code for calling a private url in the api when logged in
+  // Placeholder, can be changed out to pull workspace data/ whatever that pops into your mind 
+  useEffect(() => {
+    const getUserMetadata = async () => {
+      const domain = "dev-kqx4v2yr.jp.auth0.com";
+  
+      try {
+        const accessToken = await getAccessTokenSilently({
+          audience: `https://testapi/api`,
+          scope: "read:current_user",
+        });
+        
+        console.log(accessToken)
+        const userDetailsByIdUrl = `http://localhost:5000/api/private`;
+  
+        const metadataResponse = await fetch(userDetailsByIdUrl, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        
+  
+        const { message } = await metadataResponse.json();
+        console.log(message)
+        // console.log(JSON.parse(response))
+        // setUserMetadata(user_metadata);
+      } catch (e) {
+        console.log(e.message);
+      }
+    };
+  
+    getUserMetadata();
+  }, []);
+  // Placeholder end
+
 
   const menu = (
     <Menu>
