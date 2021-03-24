@@ -10,4 +10,6 @@ echo $GIT_DIR
 (cd $(git rev-parse --show-toplevel)  && isort \
   `git diff --diff-filter=d --cached --name-only | grep -E '^.*\.(py)' | xargs`)
 
-(cd $(git rev-parse --show-toplevel) && git add *)
+
+staged_files=$(`git diff --diff-filter=d --cached --name-only | grep -E '^.*\.(js|jsx|tsx|ts|py)$' | xargs`)
+(cd $(git rev-parse --show-toplevel) && git add $staged_files)
