@@ -320,6 +320,8 @@ def set_augmentation(workspace_id):
 
 @app.route(f"{w_path}/rpc/startTrain", methods=[post])
 def start_training(workspace_id: int):
+    workspace = json.loads(Workspace.objects.get(workspace_id=workspace_id).to_json())
+    print(workspace)
     return rpc_call()
 
 
