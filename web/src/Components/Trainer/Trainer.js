@@ -93,6 +93,10 @@ function Preferences() {
           <Typography.Text>Learning Rate</Typography.Text> <PrefSlider min={0} max={1} step={0.1} />
         </p>
         <p>
+          <Typography.Text>Test-Train Split</Typography.Text>{" "}
+          <PrefSlider min={0} max={1} step={0.1} />
+        </p>
+        <p>
           Loss Function
           <Dropdown trigger={["click"]} overlay={LossFnDropdown}>
             <Button style={{float: "right", minWidth: "10vw"}}>{buttonState}</Button>
@@ -101,7 +105,7 @@ function Preferences() {
         <p>
           Optimizer Function
           <Dropdown trigger={["click"]} overlay={OptimizerDropdown}>
-            <Button style={{float: "right"}}>{optimizerfn}</Button>
+            <Button style={{float: "right", minWidth: "10vw"}}>{optimizerfn}</Button>
           </Dropdown>
         </p>
       </div>
@@ -122,7 +126,7 @@ function Trainer() {
         <Navbar activePage="2" />
       </Header>
       <Layout>
-        <Sider collapsible collapsed={collapsed} theme="light" onCollapse={collapseToggle}>
+        {/* <Sider collapsible collapsed={collapsed} theme="light" onCollapse={collapseToggle}>
           <Menu theme="light" mode="inline">
             <Menu.Item
               key="0"
@@ -131,11 +135,9 @@ function Trainer() {
                 setselectedSection(0);
               }}
             >
-              {" "}
+              
               Import
             </Menu.Item>
-            {/*
-             */}
             <Menu.Item
               key="1"
               icon={<IoSettingsSharp />}
@@ -151,11 +153,13 @@ function Trainer() {
               Graph
             </Menu.Item>
           </Menu>
-        </Sider>
-        <Content>
-          <Card style={{minHeight: "100vh"}}>
+        </Sider> */}
+        <Content style={{margin: "50px", padding: "20px"}}>
+          <Card style={{minHeight: "60vh"}}>
             <Preferences />
-            <Button type="primary">Trainer</Button>
+            <Button type="primary" style={{float: "right", marginRight: "7em"}}>
+              Train Model
+            </Button>
           </Card>
         </Content>
       </Layout>
