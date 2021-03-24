@@ -3,7 +3,7 @@ from configs import cnf
 from mongoengine import Document, EmbeddedDocument, connect
 from mongoengine.errors import NotUniqueError, OperationError
 from mongoengine.fields import (BaseField, DateTimeField, DictField,
-                                EmailField, ListField, ObjectIdField,
+                                EmailField, IntField, ListField, ObjectIdField,
                                 StringField)
 
 connect(db=cnf.APP_CONFIG.DB)
@@ -17,11 +17,17 @@ class Info(Document):
 class Workspace(Document):
     _id = ObjectIdField()
     name = StringField(required=True)
+    workspace_id = IntField()
     datasets = ListField(StringField())
     added_images = DictField()
     augmentations = DictField()
     model_settings = DictField()
+    test_preferred_images = ListField(StringField())
+    train_preferred_images = ListField(StringField())
     model_results = DictField()
+    user_email = EmailField()
+    created_at = DateTimeField()
+    updated_at = DateTimeField()
 
 
 class Dataset(Document):
@@ -37,5 +43,6 @@ class Globals(Document):
 
 class User(Document):
     _id = ObjectIdField()
+    user_id = IntField()
     email = EmailField()
     token = StringField()
