@@ -39,8 +39,15 @@ def get_all_image_ids(workspace_id: int):
     return [utils.path_to_base64(image) for image in images_list]
 
 
-def add_dataset_to_workspace(dataset_path, workspace_path):
-    pass
+def add_dataset_to_workspace(dataset, workspace_path):
+    dataset_path = os.path.join(cnf.DATASETS_BASE_PATH, dataset)
+    for cls in os.listdir(dataset_path):
+        if os.path.isdir(cls):
+            cls_path = os.path.join(dataset_path, cls)
+            for img in cls:
+                img_path = os.path.join(cls_path, img)
+                dst_path = os.path.join(workspace_path, cnf.IMAGES_FOLDER, cls)
+                utils.ln_s(img_path, dst_path)
 
 
 def remove_dataset_from_workspace(workspace_path, dataset_path):
