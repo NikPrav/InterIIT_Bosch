@@ -22,11 +22,6 @@ class GlobalConfig(BaseSettings):
     # define global variables with the Field class
     ENV_STATE: Optional[str] = Field(None, env="ENV_STATE")
 
-    # environment specific variables do not need the Field class
-    REDIS_HOST: Optional[str] = None
-    REDIS_PORT: Optional[int] = None
-    REDIS_PASS: Optional[str] = None
-
     DATASETS_BASE_PATH: Optional[str] = os.path.expanduser("~/.datasets")
     WORKSPACES_BASE_PATH: Optional[str] = os.path.expanduser("~/.workspaces")
     TRASH_BASE_PATH: Optional[str] = os.path.expanduser("~/.trash")
@@ -73,4 +68,3 @@ cnf = FactoryConfig(GlobalConfig().ENV_STATE)()
 
 if __name__ == "__main__":
     print(cnf.__repr__())
-    print(cnf.__dir__())
