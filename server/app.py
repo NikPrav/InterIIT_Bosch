@@ -34,7 +34,7 @@ w_path = "/workspaces/<int:workspace_id>"
 img_path = "/workspaces/<int:workspace_id>/images/<string:image_id>"
 
 rpc_call = lambda: {"state": "success"}
-email = "ch17btech11023@iith.ac.in"
+# email = "ch17btech11023@iith.ac.in"
 
 app = Flask(__name__)
 
@@ -120,14 +120,14 @@ def requires_auth(f):
                     audience=API_AUDIENCE,
                     issuer="https://" + AUTH0_DOMAIN + "/",
                 )
-                # headers = {"Authorization": auth}
-                # response = requests.get(
-                #     f"https://dev-kqx4v2yr.jp.auth0.com/api/v2/users/{ustub}",
-                #     headers=headers,
-                # )
-                # response_json = response.json()
-                # email = response_json.get("email")
-                email = "ch17btech11023@iith.ac.in"
+                headers = {"Authorization": auth}
+                response = requests.get(
+                    f"https://dev-kqx4v2yr.jp.auth0.com/api/v2/users/{ustub}",
+                    headers=headers,
+                )
+                response_json = response.json()
+                email = response_json.get("email")
+                # email = "ch17btech11023@iith.ac.in"
 
             except jwt.ExpiredSignatureError:
                 raise AuthError(
@@ -183,13 +183,17 @@ def not_found(e):
 
 
 @app.route("/info", methods=["GET"])
-def get_project_info():
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def get_project_info(email):
     info = Info.objects.exclude("_id").to_json()
     return info
 
 
 @app.route("/workspaces", methods=["GET"])
-def get_workspaces():
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def get_workspaces(email):
     workspaces = (
         Workspace.objects(user_email=email)
         .only(
@@ -204,8 +208,11 @@ def get_workspaces():
     return workspaces
 
 
+
 @app.route("/workspaces", methods=["POST"])
-def create_workspace():
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def create_workspace(email):
     json_data = request.get_json()
     if not json_data:
         return {"message": "No input data provided"}, 400
@@ -238,13 +245,18 @@ def create_workspace():
 
 
 @app.route("/workspaces/<int:workspace_id>", methods=["GET"])
-def get_workspace(workspace_id: str):
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def get_workspace(email,workspace_id: str):
     info = Workspace.objects(workspace_id=workspace_id).exclude("_id")[0].to_json()
     return info
 
 
+
 @app.route("/workspaces/<int:workspace_id>", methods=["PATCH"])
-def edit_workspace(workspace_id: int):
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def edit_workspace(email,workspace_id: int):
     json_data = request.get_json()
     if not json_data:
         return {"message": "No input data provided"}, 400
@@ -265,33 +277,47 @@ def edit_workspace(workspace_id: int):
         return {"message": f"{e}"}, 400
 
 
+
 @app.route("/workspaces/<int:workspace_id>/images", methods=["GET"])
-def get_images(workspace_id: str):
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def get_images(email,workspace_id: str):
     info = {"image_ids": get_all_image_ids(workspace_id)}
     return info
 
 
+
 @app.route("/workspaces/<int:workspace_id>/images", methods=[post])
-def add_image_metadata(workspace_id: str):
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def add_image_metadata(email,workspace_id: str):
     info = {}
     return info
+
 
 
 @app.route("/workspaces/<int:workspace_id>/images/<string:image_id>", methods=[put])
-def add_image(workspace_id: str, image_id: str):
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def add_image(email,workspace_id: str, image_id: str):
     info = {}
     return info
 
 
+
 @app.route("/workspaces/<int:workspace_id>/images/<string:image_id>", methods=[get])
-def get_image(workspace_id: str, image_id: str):
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def get_image(email,workspace_id: str, image_id: str):
     workspace_name = f"workspace{workspace_id:03d}"
     image_path = os.path.join(workspace_name, utils.base64_to_path(image_id))
     return send_from_directory(cnf.WORKSPACES_BASE_PATH, image_path)
 
 
 @app.route(f"{w_path}/rpc/setModelParams", methods=[post])
-def set_model_params(workspace_id: int):
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def set_model_params(email,workspace_id: int):
     all_args = dict(request.args)
     try:
         params = ModelParams(workspace_id=workspace_id, **all_args).dict()
@@ -305,8 +331,11 @@ def set_model_params(workspace_id: int):
         return {"message": f"{e}"}, 400
 
 
+
 @app.route(f"{w_path}/rpc/setAugmentation", methods=[post])
-def set_augmentation(workspace_id):
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def set_augmentation(email,workspace_id):
     json_data = request.get_json()
     if not json_data:
         return {}
@@ -318,40 +347,55 @@ def set_augmentation(workspace_id):
     return augs
 
 
+
 @app.route(f"{w_path}/rpc/startTrain", methods=[post])
-def start_training(workspace_id: int):
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def start_training(email,workspace_id: int):
     workspace = json.loads(Workspace.objects.get(workspace_id=workspace_id).to_json())
     print(workspace)
     return rpc_call()
 
 
 @app.route(f"{w_path}/rpc/getTrainInfo", methods=[get])
-def get_training_info(workspace_id: int):
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def get_training_info(email,workspace_id: int):
     return rpc_call()
 
 
 @app.route(f"{w_path}/rpc/stopTrain", methods=[post])
-def stop_training(workspace_id: int):
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def stop_training(email,workspace_id: int):
     return rpc_call()
 
 
 @app.route(f"{w_path}/rpc/getModelInfo", methods=[get])
-def get_model_info(workspace_id: int):
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def get_model_info(email,workspace_id: int):
     return rpc_call()
 
 
 @app.route(f"{w_path}/rpc/infer", methods=[post])
-def infer(workspace_id: int):
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def infer(email,workspace_id: int):
     return rpc_call()
 
 
 @app.route(f"{w_path}/rpc/feedback", methods=[post])
-def feedback(workspace_id: int):
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def feedback(email,workspace_id: int):
     return rpc_call()
 
 
 @app.route(f"{w_path}/rpc/getSuggestions", methods=[get])
-def get_suggestions(workspace_id: int):
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def get_suggestions(email,workspace_id: int):
     return rpc_call()
 
 
