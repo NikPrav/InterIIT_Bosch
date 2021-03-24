@@ -4,11 +4,11 @@ import pathlib
 
 
 def base64_to_path(chunk):
-    pass
+    return base64.urlsafe_b64decode(chunk.encode("ascii")).decode("ascii")
 
 
-def path_to_base64chunk(path):
-    pass
+def path_to_base64(path):
+    return base64.urlsafe_b64encode(path.encode("ascii")).decode("ascii")
 
 
 def wid_to_path(wid: int):

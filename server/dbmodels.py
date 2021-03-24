@@ -22,6 +22,8 @@ class Workspace(Document):
     added_images = DictField()
     augmentations = DictField()
     model_settings = DictField()
+    test_preferred_images = ListField(StringField())
+    train_preferred_images = ListField(StringField())
     model_results = DictField()
     user_email = EmailField()
     created_at = DateTimeField()
@@ -41,6 +43,6 @@ class Globals(Document):
 
 class User(Document):
     _id = ObjectIdField()
+    user_id = IntField()
     email = EmailField()
     token = StringField()
-    num = IntField()

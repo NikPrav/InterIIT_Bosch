@@ -1,3 +1,4 @@
+import os
 from typing import Optional
 
 from pydantic import BaseModel, BaseSettings, Field
@@ -26,10 +27,12 @@ class GlobalConfig(BaseSettings):
     REDIS_PORT: Optional[int] = None
     REDIS_PASS: Optional[str] = None
 
-    DATASETS_BASE_PATH: Optional[str] = "~/.datasets"
-    WORKSPACES_BASE_PATH: Optional[str] = "~/.workspaces"
-    IMAGES_FOLDER: Optional[str] = "/images"
-    VALIDATION_FOLDER: Optional[str] = "/validation_images"
+    DATASETS_BASE_PATH: Optional[str] = os.path.expanduser("~/.datasets")
+    WORKSPACES_BASE_PATH: Optional[str] = os.path.expanduser("~/.workspaces")
+    TRASH_BASE_PATH: Optional[str] = os.path.expanduser("~/.trash")
+    IMAGES_FOLDER: Optional[str] = "images"
+    VALIDATION_FOLDER: Optional[str] = "validation_images"
+    MODELS_FOLDER: Optional[str] = "models"
 
     class Config:
         """Loads the dotenv file."""
