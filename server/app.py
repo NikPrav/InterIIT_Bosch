@@ -120,14 +120,14 @@ def requires_auth(f):
                     audience=API_AUDIENCE,
                     issuer="https://" + AUTH0_DOMAIN + "/",
                 )
-                # headers = {"Authorization": auth}
-                # response = requests.get(
-                #     f"https://dev-kqx4v2yr.jp.auth0.com/api/v2/users/{ustub}",
-                #     headers=headers,
-                # )
-                # response_json = response.json()
-                # email = response_json.get("email")
-                email = "ch17btech11023@iith.ac.in"
+                headers = {"Authorization": auth}
+                response = requests.get(
+                    f"https://dev-kqx4v2yr.jp.auth0.com/api/v2/users/{ustub}",
+                    headers=headers,
+                )
+                response_json = response.json()
+                email = response_json.get("email")
+                # email = "ch17btech11023@iith.ac.in"
 
             except jwt.ExpiredSignatureError:
                 raise AuthError(
