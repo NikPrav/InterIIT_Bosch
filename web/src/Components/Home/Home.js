@@ -5,6 +5,8 @@ import {Content} from "antd/lib/layout/layout";
 import Navbar from "../Navbar/Navbar";
 import Checkbox from "antd/lib/checkbox/Checkbox";
 
+const { confirm } = Modal;
+
 function Home() {
   const {Title, Paragraph, Text, Link} = Typography;
   const [buttonState, setButtonState] = useState("German DataSet");
@@ -55,17 +57,17 @@ function Home() {
     </Menu>
   );
 
-  const [isModalVisible, setisModalVisible] = useState(false);
-  const showModal = () => {
-    setisModalVisible(true);
+  const [isWorkspaceModalVisible, setisWorkspaceModalVisible] = useState(false);
+  const showWorkspaceModal = () => {
+    setisWorkspaceModalVisible(true);
   };
 
   const handleOk = () => {
-    setisModalVisible(false);
+    setisWorkspaceModalVisible(false);
   };
 
   const handleCancel = () => {
-    setisModalVisible(false);
+    setisWorkspaceModalVisible(false);
   };
   const options = [
     {label: "GermanDataset", value: "GermanDataset"},
@@ -76,6 +78,25 @@ function Home() {
   const onCheckboxChange = checkedValues => {
     console.log("checked = ", checkedValues);
   };
+
+
+  function showDeleteConfirm() {
+    confirm({
+      title: 'Are you sure delete this Workspace?',
+      // icon: <ExclamationCircleOutlined />,
+      content: 'This action is permanent and all associated images will be lost ',
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
+      onOk() {
+        console.log('OK');
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
+    });
+  }
+
   return (
     <Layout>
       <Navbar />
@@ -87,7 +108,7 @@ function Home() {
           </div>
           <Modal
             title="New Workspace"
-            visible={isModalVisible}
+            visible={isWorkspaceModalVisible}
             onOk={handleOk}
             onCancel={handleCancel}
             footer={[
@@ -109,18 +130,24 @@ function Home() {
             ]}
           >
             <p>
-              Choose a dataset from the dropdown and hint train to get quickly started or manually
+              Choose a dataset from below to get started. You can add images manually later to
               fine-tune your dataset.
             </p>
-            Choose a dataset below to get started:{" "}
-            <Dropdown overlay={menu}>
+            {/* <Dropdown overlay={menu}>
               <Button style={{minWidth: "30px"}}>{buttonState}</Button>
-            </Dropdown>
-            <Checkbox>German Dataset</Checkbox>
-            <Checkbox>Indian Dataset</Checkbox>
-            <Checkbox>British Dataset</Checkbox>
+            </Dropdown> */}
+            <div>
+              <Checkbox>German Dataset</Checkbox>
+            </div>
+            <div>
+              <Checkbox>Indian Dataset</Checkbox>
+            </div>
+            <div>
+              <Checkbox>British Dataset</Checkbox>
+            </div>
             {/*<Checkbox.Group options={options} onChange={onCheckboxChange} defaultValue={['GermanDataset']} />*/}
           </Modal>
+         
 
           <div class="list-container">
             <List bordered className="home-list" size="large">
@@ -144,7 +171,10 @@ function Home() {
                 <Button type="primary" style={{float: "right"}} className="button" href="/editor">
                   Use
                 </Button>
-                <Button type="danger" style={{float: "right"}} className="button" href="/editor">
+                <Button type="danger" style={{float: "right"}} className="button" 
+                // href="/editor"
+                onClick={showDeleteConfirm}
+                >
                   Delete
                 </Button>
               </List.Item>
@@ -152,7 +182,7 @@ function Home() {
                 <Button
                   type="primary"
                   style={{float: "right", alignSelf: "flex-end"}}
-                  onClick={showModal}
+                  onClick={showWorkspaceModal}
                 >
                   {" "}
                   CREATE NEW
