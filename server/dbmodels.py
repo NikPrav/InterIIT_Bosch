@@ -2,8 +2,8 @@ import mongoengine as me
 from configs import cnf
 from mongoengine import Document, EmbeddedDocument, connect
 from mongoengine.errors import NotUniqueError, OperationError
-from mongoengine.fields import (BaseField, DateTimeField, DictField, IntField,
-                                EmailField, ListField, ObjectIdField,
+from mongoengine.fields import (BaseField, DateTimeField, DictField,
+                                EmailField, IntField, ListField, ObjectIdField,
                                 StringField)
 
 connect(db=cnf.APP_CONFIG.DB)
@@ -17,7 +17,7 @@ class Info(Document):
 class Workspace(Document):
     _id = ObjectIdField()
     name = StringField(required=True)
-    num = IntField()
+    workspace_id = IntField()
     datasets = ListField(StringField())
     added_images = DictField()
     augmentations = DictField()

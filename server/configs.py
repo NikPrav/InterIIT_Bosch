@@ -28,6 +28,8 @@ class GlobalConfig(BaseSettings):
 
     DATASETS_BASE_PATH: Optional[str] = "~/.datasets"
     WORKSPACES_BASE_PATH: Optional[str] = "~/.workspaces"
+    IMAGES_FOLDER: Optional[str] = "/images"
+    VALIDATION_FOLDER: Optional[str] = "/validation_images"
 
     class Config:
         """Loads the dotenv file."""

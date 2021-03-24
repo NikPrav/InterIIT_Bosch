@@ -1,27 +1,26 @@
 import base64
-from datetime import datetime
 import json
 import typing as t
+from datetime import datetime
 from functools import wraps
 from io import BytesIO
-
-# from six.moves.urllib.request import urlopen
 from urllib.request import urlopen
 
+import requests
+import torchcommands
 import torchvision.transforms as transforms
+from configs import cnf
+from core import (add_dataset_to_workspace, create_workspace_dir,
+                  remove_dataset_from_workspace)
+from dbmodels import Dataset, Globals, Info, User, Workspace
 from flask import Flask, _request_ctx_stack, jsonify, request
 from flask_cors import cross_origin
 from jose import jwt
 from PIL import Image
 from pydantic import ValidationError
+from req_models import WorkspaceCreate
 from werkzeug.datastructures import Headers
 from werkzeug.wrappers import BaseResponse
-import requests
-
-import torchcommands
-from configs import cnf
-from dbmodels import Dataset, Globals, Info, Workspace
-from req_models import WorkspaceCreate
 
 app = Flask(__name__)
 
@@ -31,6 +30,7 @@ w_path = "/workspaces/<int:workspace_id>"
 img_path = "/workspaces/<string:workspace_id>/images/<string:image_id>"
 
 rpc_call = lambda: {"state": "success"}
+email = "ch17btech11023@iith.ac.in"
 
 app = Flask(__name__)
 
@@ -185,7 +185,7 @@ def get_project_info():
 
 
 @app.route("/workspaces", methods=["GET"])
-def get_workspaces(email):
+def get_workspaces():
     workspaces = Workspace.objects(user_email=email).only(
         "name",
         "datasets",
@@ -196,7 +196,7 @@ def get_workspaces(email):
 
 
 @app.route("/workspaces", methods=["POST"])
-def create_workspace(email):
+def create_workspace():
     json_data = request.get_json()
     if not json_data:
         return {"message": "No input data provided"}, 400
@@ -206,9 +206,9 @@ def create_workspace(email):
     except ValidationError as e:
         app.logger.info("%s", e)
         return {"message": "Wrong input data provided"}, 400
-    if Workspace.objects(user_email=email).count() >= 10:
+    if n := Workspace.objects(user_email=email).count() >= 10:
         return {"message": "You have reached the limit in number of workspaces."}, 400
-    num = Workspace.objects.count() + 1
+    num = User.objects(email=email).user_id + n + 1
     workspace = Workspace(
         **data,
         user_email=email,
@@ -216,13 +216,14 @@ def create_workspace(email):
         updated_at=datetime.utcnow(),
         workspace_id=num,
     )
+    create_workspace_dir(num)
     workspace.save()
     return workspace.to_json()
 
 
 @app.route("/workspaces/<int:workspace_id>", methods=["GET"])
-def get_workspace(email, workspace_id: str):
-    info = Workspace.objects(workspace_id=workspace_id).to_json()
+def get_workspace(workspace_id: str):
+    info = Workspace.objects(workspace_id=workspace_id).exclude("_id").to_json()
     return info
 
 
