@@ -90,6 +90,9 @@ function Home() {
       cancelText: 'No',
       onOk() {
         console.log('OK');
+        // return new Promise((resolve, reject) => {
+        //   setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
+        // }).catch(() => console.log('Oops errors!'));
       },
       onCancel() {
         console.log('Cancel');
