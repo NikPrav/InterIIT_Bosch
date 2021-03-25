@@ -14,6 +14,7 @@ function Home() {
   const [buttonState, setButtonState] = useState("German DataSet");
   const {user, isAuthenticated, getAccessTokenSilently} = useAuth0();
   const [accessToken, setAccessToken] = useState(null);
+  const [workspaceList, setworkspaceList] = useState([]);
   let myAccessToken = null;
 
   const loginApi = async () => {
@@ -42,7 +43,6 @@ function Home() {
         console.log(`Error:${e.message}`);
       }
     };
-
     getUserMetadata();
   };
 
@@ -62,6 +62,7 @@ function Home() {
       });
 
       const umimessage = await userWorkSpaceReq;
+      setworkspaceList(umimessage);
       console.log(umimessage);
     } catch (e) {
       console.log(e.message);
@@ -147,7 +148,10 @@ function Home() {
       });
       console.log("Create Workspace Sent");
       const umimessage = await userWorkSpaceCreate;
+      setworkspaceList([...workspaceList, umimessage]);
       console.log(umimessage);
+      console.log("WorkSpace List");
+      console.log(workspaceList);
     } catch (e) {
       console.log(e.message);
     }
@@ -175,7 +179,6 @@ function Home() {
   function showDeleteConfirm() {
     confirm({
       title: "Are you sure delete this Workspace?",
-      // icon: <ExclamationCircleOutlined />,
       content: "This action is permanent and all associated images will be lost ",
       okText: "Yes",
       okType: "danger",
@@ -276,6 +279,29 @@ function Home() {
                     Delete
                   </Button>
                 </List.Item>
+                {workspaceList.map(inst => (
+                  <List.Item>
+                    <Text>2.</Text>
+                    {inst.name}
+                    <Button
+                      type="primary"
+                      style={{float: "right"}}
+                      className="button"
+                      href="/editor"
+                    >
+                      Use
+                    </Button>
+                    <Button
+                      type="danger"
+                      style={{float: "right"}}
+                      className="button"
+                      // href="/editor"
+                      onClick={showDeleteConfirm}
+                    >
+                      Delete
+                    </Button>
+                  </List.Item>
+                ))}
                 <List.Item>
                   <Button
                     type="primary"
