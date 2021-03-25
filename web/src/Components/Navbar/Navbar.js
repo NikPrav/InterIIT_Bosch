@@ -7,7 +7,7 @@ function Navbar(props) {
   const {Step} = Steps;
 
   const {activePage, isOutside, workspace} = props;
-  console.log(props);
+
   const {user, isAuthenticated, logout} = useAuth0();
   return (
     <Layout.Header>
@@ -43,11 +43,14 @@ function Navbar(props) {
           Sign out
         </Button>
         {activePage == 1 && (
-            <Link to={`/trainer?workspace_id=${workspace}`}>
-					<Button
-            type="primary"
-            style={{float: "right", paddingLeft: "10px", marginTop: "15px", marginRight: "10px"}}
-          >Proceed</Button></Link>
+          <Link to={`/trainer?workspace_id=${workspace}`}>
+            <Button
+              type="primary"
+              style={{float: "right", paddingLeft: "10px", marginTop: "15px", marginRight: "10px"}}
+            >
+              Proceed
+            </Button>
+          </Link>
         )}
       </Menu>
     </Layout.Header>
