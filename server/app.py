@@ -1,5 +1,6 @@
 import base64
 import contextlib
+import csv
 import json
 import os
 import pathlib
@@ -387,8 +388,11 @@ def add_class(email, workspace_id):
             workspace_name = f"workspace{workspace_id:03d}"
             workspace_path = os.path.join(cnf.WORKSPACES_BASE_PATH, workspace_name)
             imgs_path = os.path.join(workspace_path, cnf.IMAGES_FOLDER)
-            num = max(int(sorted(os.listdir(imgs_path))[:-1]), 80)
-            class_folder_name = f"{num+1:05d}"
+            num = max(int(sorted(os.listdir(imgs_path))[:-1]), 80) + 1
+            class_folder_name = f"{num:05d}"
+            with open(os.path.join(workspace_path, cnf.CLASSES_FILE), 'a') as f:
+                writer = csv.writer(f)
+                 writer.writerow([num, class_folder_name]
             pathlib.Path(os.path.join(workspace_path, class_folder_name).mkdir(parents=True, exist_ok=True))
     except ValidationError as e:
         app.logger.error("%s", e)
@@ -406,7 +410,7 @@ def delete_class_from_workspace(email, workspace_id, class_id):
     with contextlib.suppress(FileNotFoundError):
         os.remove(os.path.join(workspace_path, cnf.IMAGES_FOLDER, class_folder_name))
     with contextlib.suppress(FileNotFoundError):
-        os.remove(os.path.join(workspace_path, cnf.VALIDATION_FOLDER class_folder_name))
+        os.remove(os.path.join(workspace_path, cnf.VALIDATION_FOLDER, class_folder_name))
 
 
 @app.route("/workspaces/<int:workspace_id>/images", methods=["GET"])
