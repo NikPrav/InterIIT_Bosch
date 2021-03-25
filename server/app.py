@@ -20,6 +20,7 @@ from jose import jwt
 from PIL import Image
 from pydantic import ValidationError
 from werkzeug.datastructures import Headers
+from werkzeug.utils import secure_filename
 from werkzeug.wrappers import BaseResponse
 
 import torchcommands
@@ -385,6 +386,19 @@ def delete_workspace(email, workspace_id: int):
     return {"message": "success"}
 
 
+@app.route("/workspaces/<int:workspace_id>/classes", methods=[get])
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def get_classes(email, workspace_id):
+    workspace_name = f"workspace{workspace_id:03d}"
+    workspace_path = os.path.join(cnf.WORKSPACES_BASE_PATH, workspace_name)
+    with open(os.path.join(workspace_path, cnf.CLASSES_FILE), "r") as f:
+        reader = csv.reader(f)
+        data = list(reader)
+        dict_ = dict(zip([x, y] for [x, y] in data))
+    return dict_
+
+
 @app.route("/workspaces/<int:workspace_id>/classes", methods=[post])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
@@ -465,11 +479,22 @@ def add_image_metadata(email, workspace_id: str):
       201:
         description: Metadata has been added.
     """
+    json_data = request.get_json()
+    image = json_data["image"]
+    class_id = json_data["id"]
+    image_bytes = image.encode("ascii")
+    workspace_name = f"workspace{workspace_id:03d}"
+    workspace_path = os.path.join(cnf.WORKSPACES_BASE_PATH, workspace_name)
+    cls_name = f"{class_id:05d}"
+    cls_path = os.path.join(workspace_path, cls_name)
+    n = len([x for x in os.listdir(cls_path) if x[:4] == "user"]) + 1
+    with open(f"user_{n:03d}", "wb") as fh:
+        fh.write(base64.decodebytes(image_bytes))
     info = {}
     return info, 201
 
 
-@app.route("/workspaces/<int:workspace_id>/images/<string:image_id>", methods=[put])
+@app.route("/workspaces/<int:workspace_id>/images/<string:image_id>", methods=[post])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
 def add_image(email, workspace_id: str, image_id: str):
@@ -485,6 +510,12 @@ def add_image(email, workspace_id: str, image_id: str):
       201:
         description: Image has been added.
     """
+    if "file" not in request.files:
+        return {"message": "No input data provided"}, 400
+    f = request.files["file"]
+    if f:
+        filename = secure_filename(f.filename)
+        f.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
     info = {}
     return info, 201
 
