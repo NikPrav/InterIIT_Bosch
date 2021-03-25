@@ -197,7 +197,7 @@ def add_user_if_not_exists(email):
         num = User.objects.count()
         user = User(user_id=num + 1, email=email)
         user.save()
-
+    return {"message":"Success", "email":email }
 
 @app.route("/workspaces", methods=["GET"])
 @cross_origin(headers=["Content-Type", "Authorization"])

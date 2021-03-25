@@ -5,6 +5,7 @@ import {Content} from "antd/lib/layout/layout";
 import Navbar from "../Navbar/Navbar";
 import Checkbox from "antd/lib/checkbox/Checkbox";
 import {useAuth0} from "@auth0/auth0-react";
+import request, {extend} from "umi-request";
 
 const {confirm} = Modal;
 
@@ -16,7 +17,7 @@ function Home() {
   // const [userMetadata, setUserMetadata] = useState(null);
   // getUserMetadata();
 
-  const callApi = async () => {
+  const loginApi = async () => {
     const getUserMetadata = async () => {
       // console.log(user)
       const domain = "dev-kqx4v2yr.jp.auth0.com";
@@ -26,16 +27,17 @@ function Home() {
           audience: `https://dev-kqx4v2yr.jp.auth0.com/api/v2/`,
           scope: "read:current_user",
         });
-        const UrlToSendDataTo = `http://localhost:5000/test`;
+        const UrlToSendDataTo = `http://localhost:5000/register`;
 
-        const CallPrivateApi = await fetch(UrlToSendDataTo, {
+        const CallUmiApi = await request(UrlToSendDataTo, {
+          method: "post",
           headers: {
             Authorization: `Bearer ${accessToken}`,
             User_sub: `${user.sub}`,
           },
         });
-        const message = await CallPrivateApi.json();
-        console.log(message);
+        const umimessage = await CallUmiApi;
+        console.log(umimessage);
       } catch (e) {
         console.log(`Error:${e.message}`);
       }
@@ -47,7 +49,7 @@ function Home() {
   useEffect(
     async user => {
       console.log("Calling API");
-      await callApi();
+      await loginApi();
     },
     [user]
   );

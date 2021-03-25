@@ -10,16 +10,22 @@ function Navbar(props) {
     <Layout.Header>
       <div className="logo"></div>
       <Menu theme="dark" mode="horizontal" selectedKeys={activePage}>
-        {!isOutside && <Menu.Item key="1" onClick="/editor">
-          <a href="/editor">Dataset</a>
-        </Menu.Item>}
-        {!isOutside && <Menu.Item key="2" onClick="/trainer">
-          <a href="/trainer">Training</a>
-        </Menu.Item>}
-        {!isOutside && <Menu.Item key="3">
-          <a href="/infer">Inference</a>
-        </Menu.Item>}
-        
+        {!isOutside && (
+          <Menu.Item key="1" onClick="/editor">
+            <a href="/editor">Dataset</a>
+          </Menu.Item>
+        )}
+        {!isOutside && (
+          <Menu.Item key="2" onClick="/trainer">
+            <a href="/trainer">Training</a>
+          </Menu.Item>
+        )}
+        {!isOutside && (
+          <Menu.Item key="3" onClick="/trainer">
+            <a href="/infer">Inference</a>
+          </Menu.Item>
+        )}
+
         {isAuthenticated && (
           <Avatar
             src={user.picture}
@@ -33,10 +39,12 @@ function Navbar(props) {
         >
           Sign out
         </Button>
-        {(activePage == 1) && (
-          <Button type="primary"
-          href="/trainer"
-          style={{float: "right", paddingLeft: "10px", marginTop: "15px" , marginRight:"10px"}}>
+        {activePage == 1 && (
+          <Button
+            type="primary"
+            href="/trainer"
+            style={{float: "right", paddingLeft: "10px", marginTop: "15px", marginRight: "10px"}}
+          >
             Proceed
           </Button>
         )}
