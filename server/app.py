@@ -392,7 +392,7 @@ def add_class(email, workspace_id):
             class_folder_name = f"{num:05d}"
             with open(os.path.join(workspace_path, cnf.CLASSES_FILE), 'a') as f:
                 writer = csv.writer(f)
-                 writer.writerow([num, class_folder_name]
+                writer.writerow([num, class_folder_name]
             pathlib.Path(os.path.join(workspace_path, class_folder_name).mkdir(parents=True, exist_ok=True))
     except ValidationError as e:
         app.logger.error("%s", e)
