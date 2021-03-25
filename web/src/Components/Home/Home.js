@@ -32,11 +32,17 @@ function Home() {
         });
         const UrlToSendDataTo = `http://localhost:5000/api/private`;
         ;
+        
+
+        const email  = user.email;
+
+        // setUserMetadata(user_metadata);
+        // const { email } = userMetadata;
 
         const CallPrivateApi = await fetch(UrlToSendDataTo, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
-            User_sub:`${user.sub}`,
+            email:`${email}`,
           },
         });
         const { message } = await CallPrivateApi.json();
