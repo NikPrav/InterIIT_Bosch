@@ -1,0 +1,41 @@
+.site-layout-content {
+  min-height: 280px;
+  padding: 40px 10px 24px;
+  background: #ffffff;
+  /* background: rgba(255, 255, 255, 0.2); */
+  margin: 20px;
+  text-align: center;
+  /* min-height:600px; */
+}
+
+.site-layout-sub-header-background {
+  background: #fff;
+  text-align: center;
+  padding: "10px 10px 10px";
+}
+
+.site-layout-background {
+  /* background: #fff; */
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.center {
+  padding-top: 20vh;
+  margin: auto;
+}
+
+.site-layout-footer {
+  padding: 50px 10px 10px;
+  float: bottom;
+  /* min-height:80%; */
+}
+
+.title-custom-style {
+  color: white;
+  padding: 10px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.fullpage {
+  min-height: 100vh;
+}
