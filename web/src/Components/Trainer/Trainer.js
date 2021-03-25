@@ -19,9 +19,9 @@ function PrefSlider(props) {
 }
 
 function Preferences() {
-  const [buttonState, setButtonState] = useState("CategoricalCrossEntropy");
+  const [buttonState, setButtonState] = useState("nll_lossfunction");
   const [optimizerfn, setoptimizerfn] = useState("Sgd");
-  const LossFns = ["CategoricalCrossEntropy", "MeanSquaredError"];
+  //const LossFns = ["CategoricalCrossEntropy", "MeanSquaredError"];
 
   const Simple = item => {
     <Menu.Item>{item}</Menu.Item>;
@@ -48,32 +48,31 @@ function Preferences() {
     <Menu>
       <Menu.Item
         onClick={() => {
-          setoptimizerfn("Sgd");
+          setoptimizerfn("SGD");
         }}
       >
-        Sgd
+        SGD
       </Menu.Item>
       <Menu.Item
         onClick={() => {
-          setoptimizerfn("Momentum");
+          setoptimizerfn("ADAM");
         }}
       >
-        Momentum
+        ADAM
       </Menu.Item>
       <Menu.Item
         onClick={() => {
-          setoptimizerfn("Adagrad");
+          setoptimizerfn("ADAGRAD");
         }}
       >
-        Adagrad
+        ADAGRAD
       </Menu.Item>
       <Menu.Item
-        danger
         onClick={() => {
-          setoptimizerfn("Rmsprop");
+          setoptimizerfn("RMSPROP");
         }}
       >
-        Rmsprop
+        RMSPROP
       </Menu.Item>
     </Menu>
   );
@@ -99,13 +98,15 @@ function Preferences() {
         <p>
           Loss Function
           <Dropdown trigger={["click"]} overlay={LossFnDropdown}>
-            <Button style={{float: "right", minWidth: "10vw"}}>{buttonState}</Button>
+            <Button type="disabled" style={{float: "right", minWidth: "11vw"}}>
+              {buttonState}
+            </Button>
           </Dropdown>
         </p>
         <p>
           Optimizer Function
           <Dropdown trigger={["click"]} overlay={OptimizerDropdown}>
-            <Button style={{float: "right", minWidth: "10vw"}}>{optimizerfn}</Button>
+            <Button style={{float: "right", minWidth: "11vw"}}>{optimizerfn}</Button>
           </Dropdown>
         </p>
       </div>
@@ -157,7 +158,10 @@ function Trainer() {
         <Content style={{margin: "50px", padding: "20px"}}>
           <Card style={{minHeight: "60vh"}}>
             <Preferences />
-            <Button type="primary" style={{float: "right", marginRight: "7em"}}>
+            <Button
+              type="primary"
+              style={{float: "right", marginRight: "7em", minWidth: "11vw", marginTop: "10px"}}
+            >
               Train Model
             </Button>
           </Card>

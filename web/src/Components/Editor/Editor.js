@@ -25,7 +25,32 @@ function PrefSlider(props) {
 function Preferences() {
   const [buttonState, setButtonState] = useState("German DataSets");
   const LossFns = ["CategoricalCrossEntropy", "MeanSquaredError"];
-
+  const [AugType, setAugType] = useState("User Selected Images");
+  const Augmenu = (
+    <Menu>
+      <Menu.Item
+        onClick={() => {
+          setAugType("User Selected Images");
+        }}
+      >
+        User Selected Images
+      </Menu.Item>
+      <Menu.Item
+        onClick={() => {
+          setAugType("Randomly Applied");
+        }}
+      >
+        Randomly Applied
+      </Menu.Item>
+      <Menu.Item
+        onClick={() => {
+          setAugType("Bulk Augmentation");
+        }}
+      >
+        Bulk Augmentation
+      </Menu.Item>
+    </Menu>
+  );
   return (
     <Card style={{paddingRight: "100px", paddingLeft: "100px", paddingTop: "30px"}}>
       <div>
@@ -36,12 +61,12 @@ function Preferences() {
           Show Augmentated Images in DataSet Viewer:{" "}
           <Switch defaultChecked style={{float: "right"}} />
         </p>
-
         <p style={{fontSize: "20px"}}>
-          <strong>Model Parameters</strong>
-        </p>
-        <p>
-          <Typography.Text>Batch Size:</Typography.Text> <PrefSlider min={1} max={20} step={1} />
+          <strong>Augmentation Preferences</strong>
+
+          <Dropdown trigger={["click"]} overlay={Augmenu}>
+            <Button style={{float: "right", minWidth: "10vw"}}>{AugType}</Button>
+          </Dropdown>
         </p>
       </div>
     </Card>
@@ -158,6 +183,7 @@ function Editor() {
         <Content style={{marginTop: "40px", marginLeft: "10px"}}>
           <Card style={{minHeight: "100vh"}}>
             {selectedSection ? <Preferences /> : <ImageRow DataClass="Stop Sign" />}
+            {/* {selectedSection ? <Preferences /> : <ImageRow DataClass="Stop Sign" />} */}
           </Card>
         </Content>
       </Layout>
