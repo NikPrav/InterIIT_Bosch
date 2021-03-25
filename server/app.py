@@ -381,7 +381,7 @@ def edit_workspace(email, workspace_id: int):
 @requires_auth
 def delete_workspace(email, workspace_id: int):
     workspace_name = f"workspace{workspace_id:03d}"
-    Workspace.objects.get(workspace_id=workspace_id).delete()
+    Workspace.objects(workspace_id=workspace_id).delete()
     os.remove(cnf.WORKSPACES_BASE_PATH, workspace_name)
     return {"message": "success"}
 
@@ -633,7 +633,7 @@ def start_training(email, workspace_id: int):
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
 def get_training_info(email, workspace_id: int):
-    return rpc_call()
+    return Workspace.objects.get(workspace_id=workspace_id).state
 
 
 @app.route(f"{w_path}/rpc/stopTrain", methods=[post])
