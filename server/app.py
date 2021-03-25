@@ -8,23 +8,29 @@ from io import BytesIO
 from urllib.request import urlopen
 
 import requests
-import torchcommands
 import torchvision.transforms as transforms
-import utils
-from configs import cnf
-from core import (add_dataset_to_workspace, create_workspace_dir,
-                  get_all_image_ids, move_to_trash,
-                  remove_dataset_from_workspace)
-from dbmodels import Dataset, Globals, Info, User, Workspace
-from flask import (Flask, _request_ctx_stack, jsonify, request,
-                   send_from_directory)
+from auth0.v3.authentication import Users
+from flasgger import Swagger
+from flask import Flask, _request_ctx_stack, jsonify, request, send_from_directory
 from flask_cors import cross_origin
 from jose import jwt
 from PIL import Image
 from pydantic import ValidationError
-from req_models import ModelParams, WorkspaceCreate, WorkspacePatch
 from werkzeug.datastructures import Headers
 from werkzeug.wrappers import BaseResponse
+
+import torchcommands
+import utils
+from configs import cnf
+from core import (
+    add_dataset_to_workspace,
+    create_workspace_dir,
+    get_all_image_ids,
+    move_to_trash,
+    remove_dataset_from_workspace,
+)
+from dbmodels import Dataset, Globals, Info, User, Workspace
+from req_models import ModelParams, WorkspaceCreate, WorkspacePatch
 
 app = Flask(__name__)
 
@@ -34,9 +40,10 @@ w_path = "/workspaces/<int:workspace_id>"
 img_path = "/workspaces/<int:workspace_id>/images/<string:image_id>"
 
 rpc_call = lambda: {"state": "success"}
-# email = "ch17btech11023@iith.ac.in"
 
 app = Flask(__name__)
+
+swagger = Swagger(app)
 
 AUTH0_DOMAIN = "dev-kqx4v2yr.jp.auth0.com"
 API_AUDIENCE = "https://dev-kqx4v2yr.jp.auth0.com/api/v2/"
@@ -120,13 +127,15 @@ def requires_auth(f):
                     audience=API_AUDIENCE,
                     issuer="https://" + AUTH0_DOMAIN + "/",
                 )
-                headers = {"Authorization": auth}
-                response = requests.get(
-                    f"https://dev-kqx4v2yr.jp.auth0.com/api/v2/users/{ustub}",
-                    headers=headers,
-                )
-                response_json = response.json()
-                email = response_json.get("email")
+                # headers = {"Authorization": auth}
+                # response = requests.get(
+                #     f"https://dev-kqx4v2yr.jp.auth0.com/api/v2/users/{ustub}",
+                #     headers=headers,
+                # )
+                # response_json = response.json()
+                # email = response_json.get("email")
+                domain = "dev-kqx4v2yr.jp.auth0.com"
+                email = Users(domain).userinfo(token)["email"]
                 # email = "ch17btech11023@iith.ac.in"
 
             except jwt.ExpiredSignatureError:
@@ -185,42 +194,77 @@ def not_found(e):
 @app.route("/info", methods=["GET"])
 @cross_origin(headers=["Content-Type", "Authorization"])
 def get_project_info():
+    """
+    Endpoint returning info needed to setup app.
+    ---
+    responses:
+      200:
+        description: Info including uneditable workspaces
+    """
     info = Info.objects.exclude("_id").to_json()
-    return info
+    return info, 200
 
 
 @app.route("/register", methods=[post])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
 def add_user_if_not_exists(email):
+    """
+    Create user if not exists.
+    ---
+    responses:
+      201:
+        description: User was created.
+      208:
+        description: User already exists.
+    """
     if not User.objects(email=email):
         num = User.objects.count()
         user = User(user_id=num + 1, email=email)
         user.save()
+        return user.to_json(), 201
+    return {"message": "User already exists."}, 208
 
 
 @app.route("/workspaces", methods=["GET"])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
 def get_workspaces(email):
-    workspaces = (
-        Workspace.objects(user_email=email)
-        .only(
-            "name",
-            "datasets",
-            "added_images",
-            "workspace_id",
+    """
+    Get info about user's workspaces.
+    ---
+    responses:
+      200:
+        description: Returning info about workspaces.
+    """
+    if not User.objects(email=email):
+        workspaces = (
+            Workspace.objects(user_email=email)
+            .only(
+                "name",
+                "datasets",
+                "added_images",
+                "workspace_id",
+            )
+            .exclude("_id")
+            .to_json()
         )
-        .exclude("_id")
-        .to_json()
-    )
-    return workspaces
+    return workspaces, 200
 
 
 @app.route("/workspaces", methods=["POST"])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
 def create_workspace(email):
+    """
+    Create new workspace.
+    ---
+    responses:
+      201:
+        description: Created workspace.
+      418:
+        description: Reached limit of workspaces.
+    """
     app.logger.error("%s", email)
     json_data = request.get_json()
     if not json_data:
@@ -232,11 +276,10 @@ def create_workspace(email):
         if Workspace.objects(user_email=email).count() >= 10:
             return {
                 "message": "You have reached the limit in number of workspaces."
-            }, 400
+            }, 418
         s = set(range(user_id * 10 + 1, user_id * 10 + 11)) - {
             w.workspace_id for w in Workspace.objects(user_email=email)
         }
-        print(s)
         num, *_ = sorted(list(s))
         workspace = Workspace(
             **data,
@@ -257,8 +300,20 @@ def create_workspace(email):
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
 def get_workspace(email, workspace_id: str):
+    """
+    Get info about specific workspace.
+    ---
+    parameters:
+      - name: workspace_id
+        in: path
+        type: int
+        required: true
+    responses:
+      200:
+        description: Returning info about workspaces.
+    """
     info = Workspace.objects(workspace_id=workspace_id).exclude("_id")[0].to_json()
-    return info
+    return info, 200
 
 
 @app.route("/workspaces/<int:workspace_id>", methods=["PATCH"])
