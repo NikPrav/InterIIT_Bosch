@@ -8,6 +8,8 @@ class AppConfig(BaseModel):
     """Application configurations."""
 
     DB: str = "Area51"
+    GD: str = "gd"
+    OD: str = "od"
 
 
 class GlobalConfig(BaseSettings):
@@ -22,12 +24,18 @@ class GlobalConfig(BaseSettings):
     # define global variables with the Field class
     ENV_STATE: Optional[str] = Field(None, env="ENV_STATE")
 
-    DATASETS_BASE_PATH: Optional[str] = os.path.expanduser("~/.datasets")
-    WORKSPACES_BASE_PATH: Optional[str] = os.path.expanduser("~/.workspaces")
-    TRASH_BASE_PATH: Optional[str] = os.path.expanduser("~/.trash")
+    # DATASETS_BASE_PATH: Optional[str] = os.path.expanduser("~/.datasets")
+    # WORKSPACES_BASE_PATH: Optional[str] = os.path.expanduser("~/.workspaces")
+    # TRASH_BASE_PATH: Optional[str] = os.path.expanduser("~/.trash")
+    DATASETS_BASE_PATH: Optional[str] = os.path.expanduser("~/.btsr/datasets")
+    WORKSPACES_BASE_PATH: Optional[str] = os.path.expanduser("~/.btsr/workspaces")
+    TRASH_BASE_PATH: Optional[str] = os.path.expanduser("~/.btsr/trash")
     IMAGES_FOLDER: Optional[str] = "images"
     VALIDATION_FOLDER: Optional[str] = "validation_images"
     MODELS_FOLDER: Optional[str] = "models"
+    PLOTS_FOLDER: Optional[str] = "plots"
+    INF_FOLDER: Optional[str] = "inf"
+    CLASSES_FILE: Optional[str] = "class.csv"
 
     class Config:
         """Loads the dotenv file."""
