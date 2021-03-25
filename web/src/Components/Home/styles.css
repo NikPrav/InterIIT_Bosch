@@ -1,0 +1,27 @@
+.home-list {
+  max-width: 600px;
+  width: 100%;
+  margin: auto;
+  /*display: flex;*/
+  justify-content: space-between;
+}
+
+.list-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 30px;
+}
+.home-heading {
+  margin-top: 30px;
+}
+
+.button {
+  margin-right: 20px;
+  margin-top: auto;
+  margin-bottom: 10px;
+}
+
+.home-content {
+  min-height: 80vh;
+}

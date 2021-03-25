@@ -226,7 +226,6 @@ def add_user_if_not_exists(email):
         )
     return {"message": "User already exists."}, 208
 
-
 @app.route("/workspaces", methods=["GET"])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
@@ -670,6 +669,11 @@ def feedback(email, workspace_id: int):
 def get_suggestions(email, workspace_id: int):
     return rpc_call()
 
+@app.route('/test')
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def test(email):
+    return {'message':email}
 
 if __name__ == "__main__":
     app.run()
