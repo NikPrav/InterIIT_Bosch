@@ -112,10 +112,6 @@ function Editor() {
               {" "}
               Augmentation
             </Menu.Item>
-            <Menu.Item key="7" icon={<DesktopOutlined />}>
-              {" "}
-              Graph
-            </Menu.Item>
           </Menu>
         </Sider>
 

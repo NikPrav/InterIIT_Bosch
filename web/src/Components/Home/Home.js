@@ -143,7 +143,7 @@ function Home() {
   return (
     isAuthenticated && (
       <Layout>
-        <Navbar />
+        <Navbar isOutside />
         <Layout.Content className="home-content">
           <div className="home-heading">
             <div style={{textAlign: "center"}}>
