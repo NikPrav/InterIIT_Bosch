@@ -77,7 +77,7 @@ function Preferences() {
 }
 
 function Editor(props) {
-	const wid = (parseInt(props.location.search.substr(14), 10));
+  const wid = parseInt(props.location.search.substr(14), 10);
   const [workspaceDetails, setWorkspaceDetails] = useState({});
   const {user, isAuthenticated, getAccessTokenSilently} = useAuth0();
   const {Header, Footer, Sider, Content} = Layout;
@@ -135,9 +135,11 @@ function Editor(props) {
     },
     [user]
   );
+  console.log(typeof wid);
+  console.log(wid);
   return (
     <Layout className="main_container">
-      <Navbar activePage="1" />
+      <Navbar activePage="1" workspace={wid} />
       <Layout>
         <Sider collapsible collapsed={collapsed} theme="light" onCollapse={collapseToggle}>
           <Menu theme="light" mode="inline">
