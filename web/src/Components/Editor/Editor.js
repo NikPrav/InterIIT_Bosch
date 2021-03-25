@@ -161,7 +161,7 @@ function Editor() {
 
         <Content style={{marginTop: "40px", marginLeft: "10px"}}>
           <Card style={{minHeight: "100vh"}}>
-            {selectedSection ? <Preferences /> : <ImageRow />}
+            {selectedSection ? <Preferences /> : <ImageRow DataClass="Stop Sign" />}
           </Card>
         </Content>
       </Layout>

@@ -14,6 +14,8 @@ function ImageRow(props) {
       setfilesList([...filesList,newfileList]);
     */
   };
+
+  const DataClass = props.DataClass;
   console.log(filesList);
   return (
     <div className="class-carousel">
@@ -28,7 +30,15 @@ function ImageRow(props) {
         }}
       >
         <Col style={{height: "100px", minWidth: "90px"}}>
-          <Card style={{height: 90}}>Stop Sign</Card>
+          <Card style={{height: 90}}>
+            {DataClass}
+            <br />
+            <Upload>
+              <Button>
+                <FaUpload />
+              </Button>
+            </Upload>
+          </Card>
         </Col>
         <Col style={{minWidth: "90px"}}>
           <PopupImage source={img} />
