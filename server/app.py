@@ -237,18 +237,17 @@ def get_workspaces(email):
       200:
         description: Returning info about workspaces.
     """
-    if not User.objects(email=email):
-        workspaces = (
-            Workspace.objects(user_email=email)
-            .only(
-                "name",
-                "datasets",
-                "added_images",
-                "workspace_id",
-            )
-            .exclude("_id")
-            .to_json()
+    workspaces = (
+        Workspace.objects(user_email=email)
+        .only(
+            "name",
+            "datasets",
+            "added_images",
+            "workspace_id",
         )
+        .exclude("_id")
+        .to_json()
+    )
     return workspaces, 200
 
 
@@ -466,17 +465,26 @@ def set_model_params(email, workspace_id: int):
         type: int
         required: true
       - name: l
-        in: body
+        description: learning rate
+        in: query
         type: int
         required: true
       - name: t
-        in: body
+        description: Test train split as percentage of test.
+        in: query
         type: int
-        required: true
       - name: e
-        in: body
+        description: Number of epochs
+        in: query
         type: int
-        required: true
+      - name: a
+        description: Augmentation type
+        enum: [random, all, selected]
+        in: query
+        type: string
+      - name: f
+        in: query
+        type: string
     responses:
       200:
         description: Updated params.
