@@ -35,6 +35,7 @@ from core import (
 )
 from dbmodels import Class, Dataset, Globals, Info, User, Workspace
 from req_models import ClassCreate, ModelParams, WorkspaceCreate, WorkspacePatch
+from dl_main import dl_main
 
 app = Flask(__name__)
 
@@ -380,7 +381,7 @@ def edit_workspace(email, workspace_id: int):
 @requires_auth
 def delete_workspace(email, workspace_id: int):
     workspace_name = f"workspace{workspace_id:03d}"
-    Workspace.objects(workspace_id=workspace_id).first().delete()
+    Workspace.objects(workspace_id=workspace_id).delete()
     os.remove(cnf.WORKSPACES_BASE_PATH, workspace_name)
     return {"message": "success"}
 
@@ -625,7 +626,7 @@ def set_augmentation(email, workspace_id):
 def start_training(email, workspace_id: int):
     workspace = json.loads(Workspace.objects.get(workspace_id=workspace_id).to_json())
     print(workspace)
-    return rpc_call()
+    return dl_main(workspace)
 
 
 @app.route(f"{w_path}/rpc/getTrainInfo", methods=[get])
