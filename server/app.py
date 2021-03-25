@@ -1,6 +1,8 @@
 import base64
+import contextlib
 import json
 import os
+import pathlib
 import typing as t
 from datetime import datetime
 from functools import wraps
@@ -29,8 +31,8 @@ from core import (
     move_to_trash,
     remove_dataset_from_workspace,
 )
-from dbmodels import Dataset, Globals, Info, User, Workspace
-from req_models import ModelParams, WorkspaceCreate, WorkspacePatch
+from dbmodels import Class, Dataset, Globals, Info, User, Workspace
+from req_models import ClassCreate, ModelParams, WorkspaceCreate, WorkspacePatch
 
 app = Flask(__name__)
 
@@ -127,16 +129,6 @@ def requires_auth(f):
                     audience=API_AUDIENCE,
                     issuer="https://" + AUTH0_DOMAIN + "/",
                 )
-                # # headers = {"Authorization": auth}
-                # # response = requests.get(
-                # #     f"https://dev-kqx4v2yr.jp.auth0.com/api/v2/users/{ustub}",
-                # #     headers=headers,
-                # # )
-                # # response_json = response.json()
-                # # email = response_json.get("email")
-                # domain = "dev-kqx4v2yr.jp.auth0.com"
-                # email = Users(domain).userinfo(token)["email"]
-                # # email = "ch17btech11023@iith.ac.in"
 
             except jwt.ExpiredSignatureError:
                 raise AuthError(
@@ -223,6 +215,13 @@ def add_user_if_not_exists(email):
         user = User(user_id=num + 1, email=email)
         user.save()
         return user.to_json(), 201
+        workspace = Workspace(
+            **data,
+            user_email=email,
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
+            workspace_id=num,
+        )
     return {"message": "User already exists."}, 208
 
 
@@ -358,13 +357,56 @@ def edit_workspace(email, workspace_id: int):
         existing_datasets = set(
             Workspace.objects(workspace_id=workspace_id)[0].datasets
         )
-        merged_datasets = list({*existing_datasets, *data["datasets"]})
-        data["datasets"] = merged_datasets
+        datasets = existing_datasets
+        if data["datasets_to_delete"]:
+            datasets -= set(data.pop("datasets_to_delete"))
+        if data["datasets_to_add"]:
+            datasets += set(data.pop("datasets_to_add"))
+        data["datasets"] = list(datasets)
+        for dataset in datasets - existing_datasets:
+            add_dataset_to_workspace(dataset)
+        for dataset in existing_datasets - datasets:
+            remove_dataset_from_workspace(dataset)
         Workspace.objects(workspace_id=workspace_id).update_one(**data)
         return Workspace.objects(workspace_id=workspace_id).to_json()
     except ValidationError as e:
         app.logger.error("%s", e)
         return {"message": f"{e}"}, 400
+
+
+@app.route("/workspaces/<int:workspace_id>/classes", methods=[post])
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def add_class(email, workspace_id):
+    json_data = request.get_json()
+    if not json_data:
+        return {"message": "No input data provided"}, 400
+    try:
+        data = ClassCreate(**json_data).dict()
+        if data["classname"]:
+            workspace_name = f"workspace{workspace_id:03d}"
+            workspace_path = os.path.join(cnf.WORKSPACES_BASE_PATH, workspace_name)
+            imgs_path = os.path.join(workspace_path, cnf.IMAGES_FOLDER)
+            num = max(int(sorted(os.listdir(imgs_path))[:-1]), 80)
+            class_folder_name = f"{num+1:05d}"
+            pathlib.Path(os.path.join(workspace_path, class_folder_name).mkdir(parents=True, exist_ok=True))
+    except ValidationError as e:
+        app.logger.error("%s", e)
+        return {"message": f"{e}"}, 400
+    return {}
+
+
+@app.route("/workspaces/<int:workspace_id>/classes/<int:class_id>", methods=[delete])
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def delete_class_from_workspace(email, workspace_id, class_id):
+    workspace_name = f"workspace{workspace_id:03d}"
+    workspace_path = os.path.join(cnf.WORKSPACES_BASE_PATH, workspace_name)
+    class_folder_name = f"{class_id:05d}"
+    with contextlib.suppress(FileNotFoundError):
+        os.remove(os.path.join(workspace_path, cnf.IMAGES_FOLDER, class_folder_name))
+    with contextlib.suppress(FileNotFoundError):
+        os.remove(os.path.join(workspace_path, cnf.VALIDATION_FOLDER class_folder_name))
 
 
 @app.route("/workspaces/<int:workspace_id>/images", methods=["GET"])
@@ -450,6 +492,14 @@ def get_image(email, workspace_id: str, image_id: str):
     workspace_name = f"workspace{workspace_id:03d}"
     image_path = os.path.join(workspace_name, utils.base64_to_path(image_id))
     return send_from_directory(cnf.WORKSPACES_BASE_PATH, image_path), 200
+
+
+@app.route("/workspaces/<int:workspace_id>/images/<string:image_id>", methods=[delete])
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def delete_image(email, workspace_id, image_id):
+    move_to_trash(workspace_id, [image_id])
+    return {}
 
 
 @app.route(f"{w_path}/rpc/setModelParams", methods=[post])
