@@ -208,11 +208,11 @@ def get_workspaces(email):
     return workspaces
 
 
-
 @app.route("/workspaces", methods=["POST"])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
 def create_workspace(email):
+    app.logger.error("%s", email)
     json_data = request.get_json()
     if not json_data:
         return {"message": "No input data provided"}, 400
@@ -247,16 +247,15 @@ def create_workspace(email):
 @app.route("/workspaces/<int:workspace_id>", methods=["GET"])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
-def get_workspace(email,workspace_id: str):
+def get_workspace(email, workspace_id: str):
     info = Workspace.objects(workspace_id=workspace_id).exclude("_id")[0].to_json()
     return info
-
 
 
 @app.route("/workspaces/<int:workspace_id>", methods=["PATCH"])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
-def edit_workspace(email,workspace_id: int):
+def edit_workspace(email, workspace_id: int):
     json_data = request.get_json()
     if not json_data:
         return {"message": "No input data provided"}, 400
@@ -277,38 +276,34 @@ def edit_workspace(email,workspace_id: int):
         return {"message": f"{e}"}, 400
 
 
-
 @app.route("/workspaces/<int:workspace_id>/images", methods=["GET"])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
-def get_images(email,workspace_id: str):
+def get_images(email, workspace_id: str):
     info = {"image_ids": get_all_image_ids(workspace_id)}
     return info
-
 
 
 @app.route("/workspaces/<int:workspace_id>/images", methods=[post])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
-def add_image_metadata(email,workspace_id: str):
+def add_image_metadata(email, workspace_id: str):
     info = {}
     return info
-
 
 
 @app.route("/workspaces/<int:workspace_id>/images/<string:image_id>", methods=[put])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
-def add_image(email,workspace_id: str, image_id: str):
+def add_image(email, workspace_id: str, image_id: str):
     info = {}
     return info
-
 
 
 @app.route("/workspaces/<int:workspace_id>/images/<string:image_id>", methods=[get])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
-def get_image(email,workspace_id: str, image_id: str):
+def get_image(email, workspace_id: str, image_id: str):
     workspace_name = f"workspace{workspace_id:03d}"
     image_path = os.path.join(workspace_name, utils.base64_to_path(image_id))
     return send_from_directory(cnf.WORKSPACES_BASE_PATH, image_path)
@@ -317,7 +312,7 @@ def get_image(email,workspace_id: str, image_id: str):
 @app.route(f"{w_path}/rpc/setModelParams", methods=[post])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
-def set_model_params(email,workspace_id: int):
+def set_model_params(email, workspace_id: int):
     all_args = dict(request.args)
     try:
         params = ModelParams(workspace_id=workspace_id, **all_args).dict()
@@ -331,11 +326,10 @@ def set_model_params(email,workspace_id: int):
         return {"message": f"{e}"}, 400
 
 
-
 @app.route(f"{w_path}/rpc/setAugmentation", methods=[post])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
-def set_augmentation(email,workspace_id):
+def set_augmentation(email, workspace_id):
     json_data = request.get_json()
     if not json_data:
         return {}
@@ -347,11 +341,10 @@ def set_augmentation(email,workspace_id):
     return augs
 
 
-
 @app.route(f"{w_path}/rpc/startTrain", methods=[post])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
-def start_training(email,workspace_id: int):
+def start_training(email, workspace_id: int):
     workspace = json.loads(Workspace.objects.get(workspace_id=workspace_id).to_json())
     print(workspace)
     return rpc_call()
@@ -360,42 +353,42 @@ def start_training(email,workspace_id: int):
 @app.route(f"{w_path}/rpc/getTrainInfo", methods=[get])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
-def get_training_info(email,workspace_id: int):
+def get_training_info(email, workspace_id: int):
     return rpc_call()
 
 
 @app.route(f"{w_path}/rpc/stopTrain", methods=[post])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
-def stop_training(email,workspace_id: int):
+def stop_training(email, workspace_id: int):
     return rpc_call()
 
 
 @app.route(f"{w_path}/rpc/getModelInfo", methods=[get])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
-def get_model_info(email,workspace_id: int):
+def get_model_info(email, workspace_id: int):
     return rpc_call()
 
 
 @app.route(f"{w_path}/rpc/infer", methods=[post])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
-def infer(email,workspace_id: int):
+def infer(email, workspace_id: int):
     return rpc_call()
 
 
 @app.route(f"{w_path}/rpc/feedback", methods=[post])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
-def feedback(email,workspace_id: int):
+def feedback(email, workspace_id: int):
     return rpc_call()
 
 
 @app.route(f"{w_path}/rpc/getSuggestions", methods=[get])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
-def get_suggestions(email,workspace_id: int):
+def get_suggestions(email, workspace_id: int):
     return rpc_call()
 
 
