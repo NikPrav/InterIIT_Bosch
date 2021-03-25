@@ -15,17 +15,17 @@ function Navbar(props) {
       <Menu theme="dark" mode="horizontal" selectedKeys={activePage}>
         {!isOutside && (
           <Menu.Item key="1" onClick={`/editor?workspace_id=${workspace}`}>
-            <a href="/editor">Dataset</a>
+            <Link to={`/editor?workspace_id=${workspace}`}>Dataset</Link>
           </Menu.Item>
         )}
         {!isOutside && (
           <Menu.Item key="2">
-            <Link href={`/trainer?workspace_id=${workspace}`}>Trainer</Link>
+            <Link to={`/trainer?workspace_id=${workspace}`}>Trainer</Link>
           </Menu.Item>
         )}
         {!isOutside && (
           <Menu.Item key="3">
-            <Link href={`/infer?workspace_id=${workspace}`}>Inference</Link>
+            <Link to={`/infer?workspace_id=${workspace}`}>Inference</Link>
           </Menu.Item>
         )}
 
@@ -43,13 +43,11 @@ function Navbar(props) {
           Sign out
         </Button>
         {activePage == 1 && (
-          <Button
+            <Link to={`/trainer?workspace_id=${workspace}`}>
+					<Button
             type="primary"
-            href="/trainer"
             style={{float: "right", paddingLeft: "10px", marginTop: "15px", marginRight: "10px"}}
-          >
-            <Link href={`/editor?workspace_id=${workspace}`}>Proceed</Link>
-          </Button>
+          >Proceed</Button></Link>
         )}
       </Menu>
     </Layout.Header>
