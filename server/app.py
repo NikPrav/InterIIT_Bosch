@@ -432,15 +432,55 @@ def add_image(email, workspace_id: str, image_id: str):
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
 def get_image(email, workspace_id: str, image_id: str):
+    """
+    Get image.
+    ---
+    Parameters:
+      - name: workspace_id
+        in: path
+        type: int
+        required: true
+      - name: image_id
+        in: path
+        type: int
+        required: true
+    responses:
+      200:
+        description: Sending image.
+    """
     workspace_name = f"workspace{workspace_id:03d}"
     image_path = os.path.join(workspace_name, utils.base64_to_path(image_id))
-    return send_from_directory(cnf.WORKSPACES_BASE_PATH, image_path)
+    return send_from_directory(cnf.WORKSPACES_BASE_PATH, image_path), 200
 
 
 @app.route(f"{w_path}/rpc/setModelParams", methods=[post])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
 def set_model_params(email, workspace_id: int):
+    """
+    Set params for models.
+    ---
+    Parameters:
+      - name: workspace_id
+        in: path
+        type: int
+        required: true
+      - name: l
+        in: body
+        type: int
+        required: true
+      - name: t
+        in: body
+        type: int
+        required: true
+      - name: e
+        in: body
+        type: int
+        required: true
+    responses:
+      200:
+        description: Updated params.
+    """
     all_args = dict(request.args)
     try:
         params = ModelParams(workspace_id=workspace_id, **all_args).dict()
