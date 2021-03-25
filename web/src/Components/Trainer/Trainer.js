@@ -5,14 +5,15 @@ import {useAuth0} from "@auth0/auth0-react";
 import request from "umi-request";
 
 function PrefSlider(props) {
-  const {max, min, step} = props;
-  const [sliderValue, setSliderValue] = useState(min);
+  const {max, min, step, defaultValue} = props;
+	console.log(defaultValue)
+  const [sliderValue, setSliderValue] = useState(defaultValue);
   const handleChange = val => {
     setSliderValue(val);
   };
   return (
     <div style={{maxWidth: "32vw", float: "right", width: "600px"}}>
-      <Slider min={min} max={max} step={step} value={sliderValue} onChange={handleChange} />
+      <Slider min={min} max={max} step={step} value={sliderValue} onChange={handleChange} defaultValue={defaultValue} />
     </div>
   );
 }
@@ -81,17 +82,17 @@ function Preferences() {
           <strong>Model Parameters</strong>
         </p>
         <p>
-          <Typography.Text>Batch Size:</Typography.Text> <PrefSlider min={1} max={20} step={1} />
+          <Typography.Text>Batch Size(in powers of 2):</Typography.Text> <PrefSlider defaultValue={7} min={4} max={9} step={1} />
         </p>
         <p>
-          <Typography.Text>Epochs</Typography.Text> <PrefSlider min={1} max={2001} step={100} />
+          <Typography.Text>Epochs</Typography.Text> <PrefSlider defaultValue={41} min={1} max={101} step={10} />
         </p>
         <p>
-          <Typography.Text>Learning Rate</Typography.Text> <PrefSlider min={0} max={5} step={0.2} />
+          <Typography.Text>Learning Rate</Typography.Text> <PrefSlider defaultValue={0.5} min={0} max={1} step={0.1} />
         </p>
         <p>
           <Typography.Text>Test-Train Split</Typography.Text>{" "}
-          <PrefSlider min={0} max={1} step={0.1} />
+          <PrefSlider min={4} max={60} step={4} defaultValue={20}/>
         </p>
         <p>
           Loss Function

@@ -16,21 +16,16 @@ function App() {
         clientId="DBJyWZCoiZFCccUM5C50YYSPrBXn08oL"
         redirectUri={"http://localhost:3000/home"}
         audience='https://dev-kqx4v2yr.jp.auth0.com/api/v2/'
+				scope="read:current_user"
       >
         <Router>
           <Switch>
-            <Route path="/editor">
-              <Editor />
-            </Route>
+            <Route path="/editor" component={Editor}/>
             <Route path="/home">
               <Home />
             </Route>
-            <Route path="/trainer">
-              <Trainer />
-            </Route>
-            <Route path="/infer">
-              <Infer />
-            </Route>
+            <Route path="/trainer" component={Trainer} />
+            <Route path="/infer" component={Infer} />
             <Route path="/">
               <Landing />
             </Route>

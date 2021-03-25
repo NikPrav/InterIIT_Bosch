@@ -10,6 +10,7 @@ import img from "./../PopupImage/stop.png";
 import Checkbox from "antd/lib/checkbox/Checkbox";
 import {useAuth0} from "@auth0/auth0-react";
 import request from "umi-request";
+import {useParams} from "react-router";
 
 function PrefSlider(props) {
   const {max, min, step} = props;
@@ -76,10 +77,9 @@ function Preferences() {
 }
 
 function Editor(props) {
-  const {workspace_id} = props;
+	const wid = (parseInt(props.location.search.substr(14), 10));
   const [workspaceDetails, setWorkspaceDetails] = useState({});
   const {user, isAuthenticated, getAccessTokenSilently} = useAuth0();
-  const wid = 12;
   const {Header, Footer, Sider, Content} = Layout;
   const [collapsed, setcollapsed] = useState(false);
   const [selectedSection, setselectedSection] = useState(0);

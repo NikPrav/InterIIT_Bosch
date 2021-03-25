@@ -1,5 +1,6 @@
 import react, {useState, useEffect} from "react";
-import {Typography, List, Button, Layout, Modal, Card, Space, Dropdown, Menu} from "antd";
+import {Link} from "react-router-dom";
+import {Typography, List, Button, Layout, Modal, Card, Space, Dropdown, Menu, Input} from "antd";
 import "./styles.css";
 import {Content} from "antd/lib/layout/layout";
 import Navbar from "../Navbar/Navbar";
@@ -15,6 +16,7 @@ function Home() {
   const {user, isAuthenticated, getAccessTokenSilently} = useAuth0();
   const [accessToken, setAccessToken] = useState(null);
   const [workspaceList, setworkspaceList] = useState([]);
+	const [workspaceName, setWorkspaceName] = useState("");
 
   const loginApi = async () => {
     const getUserMetadata = async () => {
@@ -141,7 +143,7 @@ function Home() {
           email: `${user.email}`,
         },
         data: {
-          name: "Why does this need a name?",
+          name: workspaceName,
         },
       });
       console.log("Create Workspace Sent");
@@ -226,6 +228,7 @@ function Home() {
                 </Button>,
               ]}
             >
+							<Input placeholder="Workspace name" value={workspaceName} onChange={e => setWorkspaceName(e.target.value)}/>
               <p>
                 Choose a dataset from below to get started. You can add images manually later to
                 fine-tune your dataset.
@@ -289,6 +292,7 @@ function Home() {
                     >
                       Use
                     </Button>
+									<Link href={`/editor?workspace_id=${inst.workspace_id}`}>Use</Link>
                     <Button
                       type="danger"
                       style={{float: "right"}}
