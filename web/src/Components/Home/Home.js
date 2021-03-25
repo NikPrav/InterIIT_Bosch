@@ -15,20 +15,18 @@ function Home() {
   const {user, isAuthenticated, getAccessTokenSilently} = useAuth0();
   const [accessToken, setAccessToken] = useState(null);
   const [workspaceList, setworkspaceList] = useState([]);
-  let myAccessToken = null;
 
   const loginApi = async () => {
     const getUserMetadata = async () => {
       // console.log(user)
       const domain = "dev-kqx4v2yr.jp.auth0.com";
-
       try {
         const localaccessToken = await getAccessTokenSilently({
           audience: `https://dev-kqx4v2yr.jp.auth0.com/api/v2/`,
           scope: "read:current_user",
         });
         const UrlToSendDataTo = `http://localhost:5000/register`;
-        myAccessToken = localaccessToken;
+
         setAccessToken(localaccessToken);
         const CallUmiApi = await request(UrlToSendDataTo, {
           method: "post",
@@ -52,7 +50,7 @@ function Home() {
         audience: `https://dev-kqx4v2yr.jp.auth0.com/api/v2/`,
         scope: "read:current_user",
       });
-      //console.log(myAccessToken);
+
       const userWorkSpaceReq = await request("http://localhost:5000/workspaces", {
         method: "get",
         headers: {
@@ -135,7 +133,7 @@ function Home() {
         audience: `https://dev-kqx4v2yr.jp.auth0.com/api/v2/`,
         scope: "read:current_user",
       });
-      //console.log(myAccessToken);
+
       const userWorkSpaceCreate = await request("http://localhost:5000/workspaces", {
         method: "post",
         headers: {

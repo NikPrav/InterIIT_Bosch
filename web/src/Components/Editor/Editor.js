@@ -1,4 +1,4 @@
-import react, {useState} from "react";
+import react, {useState, useEffect} from "react";
 import "antd/dist/antd.css";
 import {Layout, Menu, Empty, Card, Dropdown, Button, Switch, Slider, Typography, Modal} from "antd";
 import {DesktopOutlined, FolderAddFilled} from "@ant-design/icons";
@@ -8,6 +8,8 @@ import Navbar from "./../Navbar/Navbar";
 import ImageRow from "../ImageRow/ImageRow";
 import img from "./../PopupImage/stop.png";
 import Checkbox from "antd/lib/checkbox/Checkbox";
+import {useAuth0} from "@auth0/auth0-react";
+import request from "umi-request";
 
 function PrefSlider(props) {
   const {max, min, step} = props;
@@ -75,6 +77,9 @@ function Preferences() {
 
 function Editor(props) {
   const {workspace_id} = props;
+  const [workspaceDetails, setWorkspaceDetails] = useState({});
+  const {user, isAuthenticated, getAccessTokenSilently} = useAuth0();
+  const wid = 12;
   const {Header, Footer, Sider, Content} = Layout;
   const [collapsed, setcollapsed] = useState(false);
   const [selectedSection, setselectedSection] = useState(0);
@@ -96,16 +101,40 @@ function Editor(props) {
     setisDatasetModalVisible(false);
     console.log("Cancelled");
   };
-  const options = [
-    {label: "GermanDataset", value: "GermanDataset"},
-    {label: "IndianDataset", value: "IndianDataset"},
-    {label: "BritishDataset", value: "BritishDataset"},
-  ];
-  const defaultOptions = ["German DataSet"];
   const onCheckboxChange = checkedValues => {
     console.log("checked = ", checkedValues);
   };
 
+  const getWorkSpaceDetails = async () => {
+    try {
+      const localaccessToken = await getAccessTokenSilently({
+        audience: `https://dev-kqx4v2yr.jp.auth0.com/api/v2/`,
+        scope: "read:current_user",
+      });
+
+      const userWorkSpaceReq = await request(`http://localhost:5000/workspaces/${wid}`, {
+        method: "get",
+        headers: {
+          Authorization: `Bearer ${localaccessToken}`,
+          email: `${user.email}`,
+        },
+      });
+      const umimessage = await userWorkSpaceReq;
+
+      console.log(umimessage);
+      setWorkspaceDetails(umimessage);
+    } catch (e) {
+      console.log(e.message);
+    }
+  };
+
+  useEffect(
+    async user => {
+      console.log("Grab Workspace Details");
+      await getWorkSpaceDetails();
+    },
+    [user]
+  );
   return (
     <Layout className="main_container">
       <Navbar activePage="1" />
@@ -165,7 +194,8 @@ function Editor(props) {
           ]}
         >
           <p>The Following Datasets are currently being used in this workspace</p>
-          Choose to continue/add more datasets below{" "}
+          Choose to continue/add more datasets below. Note: Removing a Dataset will also remove it's
+          related Augmentations.{" "}
           {/* <Dropdown overlay={menu}>
               <Button style={{minWidth: "30px"}}>{buttonState}</Button>
             </Dropdown> */}

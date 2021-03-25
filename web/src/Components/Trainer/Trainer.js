@@ -1,9 +1,8 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import Navbar from "../Navbar/Navbar";
 import {Layout, Header, Dropdown, Button, Typography, Menu, Card, Slider} from "antd";
-import {DesktopOutlined, FolderAddFilled} from "@ant-design/icons";
-import {IoSettingsSharp} from "react-icons/io5";
-import {GoGraph} from "react-icons/go";
+import {useAuth0} from "@auth0/auth0-react";
+import request from "umi-request";
 
 function PrefSlider(props) {
   const {max, min, step} = props;
@@ -21,7 +20,6 @@ function PrefSlider(props) {
 function Preferences() {
   const [buttonState, setButtonState] = useState("nll_lossfunction");
   const [optimizerfn, setoptimizerfn] = useState("Sgd");
-  //const LossFns = ["CategoricalCrossEntropy", "MeanSquaredError"];
 
   const Simple = item => {
     <Menu.Item>{item}</Menu.Item>;
@@ -86,7 +84,7 @@ function Preferences() {
           <Typography.Text>Batch Size:</Typography.Text> <PrefSlider min={1} max={20} step={1} />
         </p>
         <p>
-          <Typography.Text>Epochs</Typography.Text> <PrefSlider min={1} max={2000} step={100} />
+          <Typography.Text>Epochs</Typography.Text> <PrefSlider min={1} max={2001} step={100} />
         </p>
         <p>
           <Typography.Text>Learning Rate</Typography.Text> <PrefSlider min={0} max={5} step={0.2} />
@@ -115,12 +113,48 @@ function Preferences() {
 }
 
 function Trainer() {
+  const {user, isAuthenticated, getAccessTokenSilently} = useAuth0();
   const {Header, Footer, Sider, Content} = Layout;
   const [collapsed, setcollapsed] = useState(false);
   const [selectedSection, setselectedSection] = useState(0);
+  const [workspaceDetails, setWorkspaceDetails] = useState({});
+  const [trained, settrained] = useState(false);
+  const [trainResults, settrainResults] = useState(false);
+
   const collapseToggle = () => {
     setcollapsed(!collapsed);
   };
+
+  const getWorkSpaceDetails = async () => {
+    try {
+      const localaccessToken = await getAccessTokenSilently({
+        audience: `https://dev-kqx4v2yr.jp.auth0.com/api/v2/`,
+        scope: "read:current_user",
+      });
+
+      const userWorkSpaceReq = await request(`http://localhost:5000/workspaces/12`, {
+        method: "get",
+        headers: {
+          Authorization: `Bearer ${localaccessToken}`,
+          email: `${user.email}`,
+        },
+      });
+      const umimessage = await userWorkSpaceReq;
+
+      console.log(umimessage);
+      setWorkspaceDetails(umimessage);
+    } catch (e) {
+      console.log(e.message);
+    }
+  };
+
+  useEffect(
+    async user => {
+      console.log("Grab Workspace Details");
+      await getWorkSpaceDetails();
+    },
+    [user]
+  );
   return (
     <Layout className="main_container">
       <Header className="header">
@@ -133,8 +167,11 @@ function Trainer() {
             <Button
               type="primary"
               style={{float: "right", marginRight: "7em", minWidth: "11vw", marginTop: "10px"}}
+              onClick={() => {
+                settrained(true);
+              }}
             >
-              Train Model
+              {trained ? "Retrain Model" : "Train Model"}
             </Button>
           </Card>
         </Content>
