@@ -61,7 +61,7 @@ class AuthError(Exception):
 def get_token_auth_header():
     """Obtains the Access Token from the Authorization Header"""
     auth = request.headers.get("Authorization", None)
-    ustub = request.headers.get("User_sub", None)
+    email = request.headers.get("email", None)
     if not auth:
         raise AuthError(
             {
@@ -95,7 +95,7 @@ def get_token_auth_header():
         )
 
     token = parts[1]
-    return token, auth, ustub
+    return token, auth, email
 
 
 def requires_auth(f):
@@ -104,7 +104,7 @@ def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
 
-        token, auth, ustub = get_token_auth_header()
+        token, auth, email = get_token_auth_header()
         jsonurl = urlopen("https://" + AUTH0_DOMAIN + "/.well-known/jwks.json")
         jwks = json.loads(jsonurl.read())
         unverified_header = jwt.get_unverified_header(token)
@@ -127,16 +127,16 @@ def requires_auth(f):
                     audience=API_AUDIENCE,
                     issuer="https://" + AUTH0_DOMAIN + "/",
                 )
-                # headers = {"Authorization": auth}
-                # response = requests.get(
-                #     f"https://dev-kqx4v2yr.jp.auth0.com/api/v2/users/{ustub}",
-                #     headers=headers,
-                # )
-                # response_json = response.json()
-                # email = response_json.get("email")
-                domain = "dev-kqx4v2yr.jp.auth0.com"
-                email = Users(domain).userinfo(token)["email"]
-                # email = "ch17btech11023@iith.ac.in"
+                # # headers = {"Authorization": auth}
+                # # response = requests.get(
+                # #     f"https://dev-kqx4v2yr.jp.auth0.com/api/v2/users/{ustub}",
+                # #     headers=headers,
+                # # )
+                # # response_json = response.json()
+                # # email = response_json.get("email")
+                # domain = "dev-kqx4v2yr.jp.auth0.com"
+                # email = Users(domain).userinfo(token)["email"]
+                # # email = "ch17btech11023@iith.ac.in"
 
             except jwt.ExpiredSignatureError:
                 raise AuthError(
