@@ -375,6 +375,16 @@ def edit_workspace(email, workspace_id: int):
         return {"message": f"{e}"}, 400
 
 
+@app.route("/workspaces/<int:workspace_id>", methods=[delete])
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def delete_workspace(email, workspace_id: int):
+    workspace_name = f"workspace{workspace_id:03d}"
+    Workspace.objects.get(workspace_id=workspace_id).delete()
+    os.remove(cnf.WORKSPACES_BASE_PATH, workspace_name)
+    return {"message": "success"}
+
+
 @app.route("/workspaces/<int:workspace_id>/classes", methods=[post])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
