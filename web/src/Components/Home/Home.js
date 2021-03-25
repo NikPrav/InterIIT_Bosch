@@ -16,7 +16,7 @@ function Home() {
   const {user, isAuthenticated, getAccessTokenSilently} = useAuth0();
   const [accessToken, setAccessToken] = useState(null);
   const [workspaceList, setworkspaceList] = useState([]);
-	const [workspaceName, setWorkspaceName] = useState("");
+  const [workspaceName, setWorkspaceName] = useState("");
 
   const loginApi = async () => {
     const getUserMetadata = async () => {
@@ -228,7 +228,11 @@ function Home() {
                 </Button>,
               ]}
             >
-							<Input placeholder="Workspace name" value={workspaceName} onChange={e => setWorkspaceName(e.target.value)}/>
+              <Input
+                placeholder="Workspace name"
+                value={workspaceName}
+                onChange={e => setWorkspaceName(e.target.value)}
+              />
               <p>
                 Choose a dataset from below to get started. You can add images manually later to
                 fine-tune your dataset.
@@ -284,15 +288,11 @@ function Home() {
                   <List.Item>
                     <Text>2.</Text>
                     {inst.name}
-                    <Button
-                      type="primary"
-                      style={{float: "right"}}
-                      className="button"
-                      href="/editor"
-                    >
-                      Use
+
+                    <Button type="primary" style={{float: "right"}} className="button">
+                      <Link href={`/editor?workspace_id=${inst.workspace_id}`}>Use</Link>
                     </Button>
-									<Link href={`/editor?workspace_id=${inst.workspace_id}`}>Use</Link>
+
                     <Button
                       type="danger"
                       style={{float: "right"}}
