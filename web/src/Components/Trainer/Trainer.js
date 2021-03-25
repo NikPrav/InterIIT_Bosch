@@ -121,6 +121,11 @@ function Trainer() {
   const [workspaceDetails, setWorkspaceDetails] = useState({});
   const [trained, settrained] = useState(false);
   const [trainResults, settrainResults] = useState(false);
+  const [optimizerfn, setOptimizerfn] = useState("Sgd");
+	const [batchSize, setBatchSize] = useState(7);
+	const [epochs, setEpochs] = useState(41);
+	const [learningRate, setLearningRate] = useState(0.5);
+	const [testTrainSplit, setTestTrainSplit] = useState(20);
 
   const collapseToggle = () => {
     setcollapsed(!collapsed);
@@ -133,7 +138,7 @@ function Trainer() {
         scope: "read:current_user",
       });
 
-      const userWorkSpaceReq = await request(`http://localhost:5000/workspaces/12`, {
+      const userWorkSpaceReq = await request(`${process.env.REACT_APP_API_URL}/workspaces/12`, {
         method: "get",
         headers: {
           Authorization: `Bearer ${localaccessToken}`,
@@ -164,7 +169,7 @@ function Trainer() {
       <Layout>
         <Content style={{margin: "50px", padding: "20px"}}>
           <Card style={{minHeight: "60vh"}}>
-            <Preferences />
+            <Preferences optimizerfn={optimizerfn} setOptimizerfn={setOptimizerfn} batchSize={batchSize} />
             <Button
               type="primary"
               style={{float: "right", marginRight: "7em", minWidth: "11vw", marginTop: "10px"}}

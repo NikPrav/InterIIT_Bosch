@@ -27,7 +27,7 @@ function Home() {
           audience: `https://dev-kqx4v2yr.jp.auth0.com/api/v2/`,
           scope: "read:current_user",
         });
-        const UrlToSendDataTo = `http://localhost:5000/register`;
+        const UrlToSendDataTo = `${process.env.REACT_APP_API_URL}/register`;
 
         setAccessToken(localaccessToken);
         const CallUmiApi = await request(UrlToSendDataTo, {
@@ -53,7 +53,7 @@ function Home() {
         scope: "read:current_user",
       });
 
-      const userWorkSpaceReq = await request("http://localhost:5000/workspaces", {
+      const userWorkSpaceReq = await request(`${process.env.REACT_APP_API_URL}/workspaces`, {
         method: "get",
         headers: {
           Authorization: `Bearer ${localaccessToken}`,
@@ -136,7 +136,7 @@ function Home() {
         scope: "read:current_user",
       });
 
-      const userWorkSpaceCreate = await request("http://localhost:5000/workspaces", {
+      const userWorkSpaceCreate = await request(`${process.env.REACT_APP_API_URL}/workspaces`, {
         method: "post",
         headers: {
           Authorization: `Bearer ${localaccessToken}`,

@@ -112,7 +112,7 @@ function Editor(props) {
         scope: "read:current_user",
       });
 
-      const userWorkSpaceReq = await request(`http://localhost:5000/workspaces/${wid}`, {
+      const userWorkSpaceReq = await request(`${process.env.REACT_APP_API_URL}/workspaces/${wid}`, {
         method: "get",
         headers: {
           Authorization: `Bearer ${localaccessToken}`,
