@@ -61,7 +61,7 @@ class AuthError(Exception):
 def get_token_auth_header():
     """Obtains the Access Token from the Authorization Header"""
     auth = request.headers.get("Authorization", None)
-    ustub = request.headers.get("User_sub", None)
+    email = request.headers.get("email", None)
     if not auth:
         raise AuthError(
             {
@@ -95,7 +95,7 @@ def get_token_auth_header():
         )
 
     token = parts[1]
-    return token, auth, ustub
+    return token, auth, email
 
 
 def requires_auth(f):
@@ -104,7 +104,7 @@ def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
 
-        token, auth, ustub = get_token_auth_header()
+        token, auth, email = get_token_auth_header()
         jsonurl = urlopen("https://" + AUTH0_DOMAIN + "/.well-known/jwks.json")
         jwks = json.loads(jsonurl.read())
         unverified_header = jwt.get_unverified_header(token)
@@ -127,16 +127,16 @@ def requires_auth(f):
                     audience=API_AUDIENCE,
                     issuer="https://" + AUTH0_DOMAIN + "/",
                 )
-                # headers = {"Authorization": auth}
-                # response = requests.get(
-                #     f"https://dev-kqx4v2yr.jp.auth0.com/api/v2/users/{ustub}",
-                #     headers=headers,
-                # )
-                # response_json = response.json()
-                # email = response_json.get("email")
-                domain = "dev-kqx4v2yr.jp.auth0.com"
-                email = Users(domain).userinfo(token)["email"]
-                # email = "ch17btech11023@iith.ac.in"
+                # # headers = {"Authorization": auth}
+                # # response = requests.get(
+                # #     f"https://dev-kqx4v2yr.jp.auth0.com/api/v2/users/{ustub}",
+                # #     headers=headers,
+                # # )
+                # # response_json = response.json()
+                # # email = response_json.get("email")
+                # domain = "dev-kqx4v2yr.jp.auth0.com"
+                # email = Users(domain).userinfo(token)["email"]
+                # # email = "ch17btech11023@iith.ac.in"
 
             except jwt.ExpiredSignatureError:
                 raise AuthError(
@@ -236,18 +236,17 @@ def get_workspaces(email):
       200:
         description: Returning info about workspaces.
     """
-    if not User.objects(email=email):
-        workspaces = (
-            Workspace.objects(user_email=email)
-            .only(
-                "name",
-                "datasets",
-                "added_images",
-                "workspace_id",
-            )
-            .exclude("_id")
-            .to_json()
+    workspaces = (
+        Workspace.objects(user_email=email)
+        .only(
+            "name",
+            "datasets",
+            "added_images",
+            "workspace_id",
         )
+        .exclude("_id")
+        .to_json()
+    )
     return workspaces, 200
 
 
@@ -319,6 +318,34 @@ def get_workspace(email, workspace_id: str):
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
 def edit_workspace(email, workspace_id: int):
+    """
+    Edit workspace.
+    ---
+    parameters:
+      - name: workspace_id
+        in: path
+        type: int
+        required: true
+      - name: datasets
+        in: body
+        schema:
+          type: array
+          items:
+            type: string
+      - name: model_settings
+        in: body
+        schema:
+          type: object
+      - name: images_to_delete
+        in: body
+        schema:
+          type: array
+          items:
+            type: string
+    responses:
+      200:
+        description: Edited workspace.
+    """
     json_data = request.get_json()
     if not json_data:
         return {"message": "No input data provided"}, 400
@@ -343,39 +370,124 @@ def edit_workspace(email, workspace_id: int):
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
 def get_images(email, workspace_id: str):
+    """
+    Get image details.
+    ---
+    Parameters:
+      - name: workspace_id
+        in: path
+        type: int
+        required: true
+    responses:
+      200:
+        description: Get routes of all images in workspace.
+    """
     info = {"image_ids": get_all_image_ids(workspace_id)}
-    return info
+    return info, 200
 
 
 @app.route("/workspaces/<int:workspace_id>/images", methods=[post])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
 def add_image_metadata(email, workspace_id: str):
+    """
+    Post image metadata.
+    ---
+    Parameters:
+      - name: workspace_id
+        in: path
+        type: int
+        required: true
+    responses:
+      201:
+        description: Metadata has been added.
+    """
     info = {}
-    return info
+    return info, 201
 
 
 @app.route("/workspaces/<int:workspace_id>/images/<string:image_id>", methods=[put])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
 def add_image(email, workspace_id: str, image_id: str):
+    """
+    Post image.
+    ---
+    Parameters:
+      - name: workspace_id
+        in: path
+        type: int
+        required: true
+    responses:
+      201:
+        description: Image has been added.
+    """
     info = {}
-    return info
+    return info, 201
 
 
 @app.route("/workspaces/<int:workspace_id>/images/<string:image_id>", methods=[get])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
 def get_image(email, workspace_id: str, image_id: str):
+    """
+    Get image.
+    ---
+    Parameters:
+      - name: workspace_id
+        in: path
+        type: int
+        required: true
+      - name: image_id
+        in: path
+        type: int
+        required: true
+    responses:
+      200:
+        description: Sending image.
+    """
     workspace_name = f"workspace{workspace_id:03d}"
     image_path = os.path.join(workspace_name, utils.base64_to_path(image_id))
-    return send_from_directory(cnf.WORKSPACES_BASE_PATH, image_path)
+    return send_from_directory(cnf.WORKSPACES_BASE_PATH, image_path), 200
 
 
 @app.route(f"{w_path}/rpc/setModelParams", methods=[post])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
 def set_model_params(email, workspace_id: int):
+    """
+    Set params for models.
+    ---
+    Parameters:
+      - name: workspace_id
+        in: path
+        type: int
+        required: true
+      - name: l
+        description: learning rate
+        in: query
+        type: int
+        required: true
+      - name: t
+        description: Test train split as percentage of test.
+        in: query
+        type: int
+      - name: e
+        description: Number of epochs
+        in: query
+        type: int
+      - name: a
+        description: Augmentation type
+        enum: [random, all, selected]
+        in: query
+        type: string
+      - name: f
+        in: query
+        type: string
+    responses:
+      200:
+        description: Updated params.
+    """
     all_args = dict(request.args)
     try:
         params = ModelParams(workspace_id=workspace_id, **all_args).dict()
