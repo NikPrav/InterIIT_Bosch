@@ -35,6 +35,7 @@ from core import (
 )
 from dbmodels import Class, Dataset, Globals, Info, User, Workspace
 from req_models import ClassCreate, ModelParams, WorkspaceCreate, WorkspacePatch
+from dl_main import dl_main
 
 app = Flask(__name__)
 
@@ -625,7 +626,7 @@ def set_augmentation(email, workspace_id):
 def start_training(email, workspace_id: int):
     workspace = json.loads(Workspace.objects.get(workspace_id=workspace_id).to_json())
     print(workspace)
-    return rpc_call()
+    return dl_main(workspace)
 
 
 @app.route(f"{w_path}/rpc/getTrainInfo", methods=[get])

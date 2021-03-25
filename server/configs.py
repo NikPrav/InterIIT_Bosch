@@ -8,7 +8,7 @@ class AppConfig(BaseModel):
     """Application configurations."""
 
     DB: str = "Area51"
-    GD: str = "gd"
+    GD: str = "GTSRB"
     OD: str = "od"
 
 
