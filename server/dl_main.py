@@ -19,57 +19,57 @@ def base64_to_path(chunk):
 def path_to_base64(path):
     return base64.urlsafe_b64encode(path.encode("ascii")).decode("ascii")
 
-args = {
-  "name": "xyz",
-  "workspace_id": 1,  # from 1 to 999
-  "datasets": ["arts"], # use "arts", "dits","cure"
-  "added_images": {},
-  "augmentations": {
-    "aW1hZ2VzLzAwMDAwLzAwMDAwXzAwMDAwLnBwbQ==": [
-      [
-        "hue",
-        "add_fog"
-      ],
-      [
-        "add_rain"
-      ]
-    ],
-    "aW1hZ2VzLzAwMDAwLzAwMDAwXzAwMDAxLnBwbQ==":[
-      [
-        "random"
-      ]
-    ],
-  },
-  "model_settings": {
-    "test_train_split": 10,
-    "learning_rate": 0.001,
-    "epochs": 10,
-    "batch_size": 128,
-    "augmentation_setting": "all", # "select"| "random | all",
-    "opt": "rmsprop", # | adagrad | sgd | rmsprop",
-    "augs_for_all": ["add_fog", "hue"],
-  },
-  "test_preferred_images": [],
-  "train_preferred_images": [],
-  "model_results": {},
-  "user_email": "ch17btech11023@iith.ac.in",
-  "created_at": {
-    "$date": 1616577653895
-  },
-  "updated_at": {
-    "$date": 1616579262992
-  }
-}
-def main(args):
+# args = {
+#   "name": "xyz",
+#   "workspace_id": 1,  # from 1 to 999
+#   "datasets": ["arts"], # use "arts", "dits","cure"
+#   "added_images": {},
+#   "augmentations": {
+#     "aW1hZ2VzLzAwMDAwLzAwMDAwXzAwMDAwLnBwbQ==": [
+#       [
+#         "hue",
+#         "add_fog"
+#       ],
+#       [
+#         "add_rain"
+#       ]
+#     ],
+#     "aW1hZ2VzLzAwMDAwLzAwMDAwXzAwMDAxLnBwbQ==":[
+#       [
+#         "random"
+#       ]
+#     ],
+#   },
+#   "model_settings": {
+#     "test_train_split": 10,
+#     "learning_rate": 0.001,
+#     "epochs": 10,
+#     "batch_size": 128,
+#     "augmentation_setting": "all", # "select"| "random | all",
+#     "opt": "rmsprop", # | adagrad | sgd | rmsprop",
+#     "augs_for_all": ["add_fog", "hue"],
+#   },
+#   "test_preferred_images": [],
+#   "train_preferred_images": [],
+#   "model_results": {},
+#   "user_email": "ch17btech11023@iith.ac.in",
+#   "created_at": {
+#     "$date": 1616577653895
+#   },
+#   "updated_at": {
+#     "$date": 1616579262992
+#   }
+# }
+def dl_main(args):
 
-  loc_for_worspace_creation = os.path.expanduser("~/Inter_IIT_2021")
-  loc_new_dataset = os.path.expanduser("~/Inter_IIT_2021/data/temp/train_")
+  loc_for_worspace_creation = os.path.expanduser("~/.btsr")
+  loc_new_dataset = os.path.expanduser("~/.btsr/datasets")
 
   w_id = "{:03d}".format(args["workspace_id"])
   w_loc = os.path.join(loc_for_worspace_creation,"workspace"+w_id)
   if(not args["datasets"]):
     for dats in args["datasets"]:
-      new_data_loc = loc_new_dataset + dats
+      new_data_loc = os.path.join(loc_new_dataset,dats)
       class_dict = append_to_train(os.path.join(w_loc,'images'),new_data_loc)
   
   num_classes = len(os.listdir(os.path.join(w_loc,'images')))
@@ -101,4 +101,4 @@ def main(args):
 
     
 
-main(args)
+# main(args)
