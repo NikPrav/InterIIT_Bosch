@@ -320,6 +320,34 @@ def get_workspace(email, workspace_id: str):
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
 def edit_workspace(email, workspace_id: int):
+    """
+    Edit workspace.
+    ---
+    parameters:
+      - name: workspace_id
+        in: path
+        type: int
+        required: true
+      - name: datasets
+        in: body
+        schema:
+          type: array
+          items:
+            type: string
+      - name: model_settings
+        in: body
+        schema:
+          type: object
+      - name: images_to_delete
+        in: body
+        schema:
+          type: array
+          items:
+            type: string
+    responses:
+      200:
+        description: Edited workspace.
+    """
     json_data = request.get_json()
     if not json_data:
         return {"message": "No input data provided"}, 400
@@ -344,24 +372,60 @@ def edit_workspace(email, workspace_id: int):
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
 def get_images(email, workspace_id: str):
+    """
+    Get image details.
+    ---
+    Parameters:
+      - name: workspace_id
+        in: path
+        type: int
+        required: true
+    responses:
+      200:
+        description: Get routes of all images in workspace.
+    """
     info = {"image_ids": get_all_image_ids(workspace_id)}
-    return info
+    return info, 200
 
 
 @app.route("/workspaces/<int:workspace_id>/images", methods=[post])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
 def add_image_metadata(email, workspace_id: str):
+    """
+    Post image metadata.
+    ---
+    Parameters:
+      - name: workspace_id
+        in: path
+        type: int
+        required: true
+    responses:
+      201:
+        description: Metadata has been added.
+    """
     info = {}
-    return info
+    return info, 201
 
 
 @app.route("/workspaces/<int:workspace_id>/images/<string:image_id>", methods=[put])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
 def add_image(email, workspace_id: str, image_id: str):
+    """
+    Post image.
+    ---
+    Parameters:
+      - name: workspace_id
+        in: path
+        type: int
+        required: true
+    responses:
+      201:
+        description: Image has been added.
+    """
     info = {}
-    return info
+    return info, 201
 
 
 @app.route("/workspaces/<int:workspace_id>/images/<string:image_id>", methods=[get])
