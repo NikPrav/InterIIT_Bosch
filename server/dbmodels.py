@@ -35,6 +35,7 @@ class Workspace(Document):
     model_results = DictField()
     explain_results = DictField()
     user_email = EmailField()
+    state = DictField()
     created_at = DateTimeField()
     updated_at = DateTimeField()
 

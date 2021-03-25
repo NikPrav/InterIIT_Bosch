@@ -27,7 +27,7 @@ class ModelParams(BaseModel):
     batch_size: conint(ge=16, le=512, multiple_of=2)
     a: constr(
         strip_whitespace=True, to_lower=True, regex="(random|all|select)"
-    ) = "select"
+    ) = "random"
 
 
 class ClassCreate(BaseModel):
