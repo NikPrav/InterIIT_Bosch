@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo $GIT_DIR
+FILES=$(git diff --diff-filter=d --cached --name-only | xargs)
 
 (cd $(git rev-parse --show-toplevel)  && prettier --config web/.prettierrc.json -cw \
   `git diff --diff-filter=d --cached --name-only | grep -E '^.*\.(js|jsx|tsx|ts)$' | xargs`)
@@ -10,6 +10,4 @@ echo $GIT_DIR
 (cd $(git rev-parse --show-toplevel)  && isort \
   `git diff --diff-filter=d --cached --name-only | grep -E '^.*\.(py)' | xargs`)
 
-
-staged_files=$(`git diff --diff-filter=d --cached --name-only | grep -E '^.*\.(js|jsx|tsx|ts|py)$' | xargs`)
-(cd $(git rev-parse --show-toplevel) && git add $staged_files)
+(cd $(git rev-parse --show-toplevel) && git add $FILES)
