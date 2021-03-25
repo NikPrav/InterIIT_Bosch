@@ -381,7 +381,7 @@ def edit_workspace(email, workspace_id: int):
 @requires_auth
 def delete_workspace(email, workspace_id: int):
     workspace_name = f"workspace{workspace_id:03d}"
-    Workspace.objects(workspace_id=workspace_id).first().delete()
+    Workspace.objects(workspace_id=workspace_id).delete()
     os.remove(cnf.WORKSPACES_BASE_PATH, workspace_name)
     return {"message": "success"}
 
