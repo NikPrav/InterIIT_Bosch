@@ -176,7 +176,8 @@ function Home() {
     console.log("checked = ", checkedValues);
   };
 
-  function showDeleteConfirm() {
+  function showDeleteConfirm(workspace_id) {
+		console.log(workspace_id)
     confirm({
       title: "Are you sure delete this Workspace?",
       content: "This action is permanent and all associated images will be lost ",
@@ -188,6 +189,28 @@ function Home() {
         // return new Promise((resolve, reject) => {
         //   setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
         // }).catch(() => console.log('Oops errors!'));
+				return new Promise(async(resolve, reject) => {
+try {
+      const localaccessToken = await getAccessTokenSilently({
+        audience: `https://dev-kqx4v2yr.jp.auth0.com/api/v2/`,
+        scope: "read:current_user",
+      });
+
+      const userWorkSpaceCreate = await request(`${process.env.REACT_APP_API_URL}/workspaces/${workspace_id}`, {
+        method: "delete",
+        headers: {
+          Authorization: `Bearer ${localaccessToken}`,
+          email: `${user.email}`,
+        },
+      });
+      console.log("Delete Workspace Sent");
+      const umimessage = await userWorkSpaceCreate;
+		resolve()
+    } catch (e) {
+      console.log(e.message);
+			reject(e)
+    }
+				});
       },
       onCancel() {
         console.log("Cancel");
@@ -298,7 +321,7 @@ function Home() {
                       style={{float: "right"}}
                       className="button"
                       // href="/editor"
-                      onClick={showDeleteConfirm}
+                      onClick={() => {showDeleteConfirm(inst.workspace_id)}}
                     >
                       Delete
                     </Button>

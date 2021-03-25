@@ -83,6 +83,7 @@ function Editor(props) {
   const {Header, Footer, Sider, Content} = Layout;
   const [collapsed, setcollapsed] = useState(false);
   const [selectedSection, setselectedSection] = useState(0);
+	const [classes, setClasses] = useState([])
   const collapseToggle = () => {
     setcollapsed(!collapsed);
   };
@@ -104,6 +105,31 @@ function Editor(props) {
   const onCheckboxChange = checkedValues => {
     console.log("checked = ", checkedValues);
   };
+
+	const getClasses = async () => {
+try {
+      const localaccessToken = await getAccessTokenSilently({
+        audience: `https://dev-kqx4v2yr.jp.auth0.com/api/v2/`,
+        scope: "read:current_user",
+      });
+
+      const userWorkSpaceReq = await request(`${process.env.REACT_APP_API_URL}/workspaces/${wid}/classes`, {
+        method: "get",
+        headers: {
+          Authorization: `Bearer ${localaccessToken}`,
+          email: `${user.email}`,
+        },
+      });
+      const umimessage = await userWorkSpaceReq;
+
+      console.log(umimessage);
+	setClasses(umimessage)
+    } catch (e) {
+      console.log(e.message);
+    }
+	}
+
+
 
   const getWorkSpaceDetails = async () => {
     try {
