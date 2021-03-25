@@ -21,35 +21,35 @@ function ImageRow(props) {
     */
   };
 
-  const getImageDetails = async id => {
-    try {
-      const localaccessToken = await getAccessTokenSilently({
-        audience: `https://dev-kqx4v2yr.jp.auth0.com/api/v2/`,
-        scope: "read:current_user",
-      });
+  // const getImageDetails = async id => {
+  //   try {
+  //     const localaccessToken = await getAccessTokenSilently({
+  //       audience: `https://dev-kqx4v2yr.jp.auth0.com/api/v2/`,
+  //       scope: "read:current_user",
+  //     });
 
-      const userWorkSpaceReq = await request(
-        `${process.env.REACT_APP_API_URL}/workspaces/${workspace_id}/images/${id}`,
-        {
-          method: "get",
-          headers: {
-            Authorization: `Bearer ${localaccessToken}`,
-            email: `${user.email}`,
-          },
-        }
-      );
-      const umimessage = await userWorkSpaceReq;
+  //     const userWorkSpaceReq = await request(
+  //       `${process.env.REACT_APP_API_URL}/workspaces/${workspace_id}/images/${id}`,
+  //       {
+  //         method: "get",
+  //         headers: {
+  //           Authorization: `Bearer ${localaccessToken}`,
+  //           email: `${user.email}`,
+  //         },
+  //       }
+  //     );
+  //     const umimessage = await userWorkSpaceReq;
 
-      console.log(umimessage);
-      setImageb64Paths([...imageb64Paths, umimessage]);
-    } catch (e) {
-      console.log(e.message);
-    }
-  };
+  //     console.log(umimessage);
+  //     setImageb64Paths([...imageb64Paths, umimessage]);
+  //   } catch (e) {
+  //     console.log(e.message);
+  //   }
+  // };
 
-  ImagePaths.forEach(id => {
-    getImageDetails(id);
-  });
+  // ImagePaths.forEach(id => {
+  //   getImageDetails(id);
+  // });
 
   console.log(filesList);
   return (
@@ -75,11 +75,12 @@ function ImageRow(props) {
             </Upload>
           </Card>
         </Col>
-        {imageb64Paths.map(x => {
-          <Col style={{minWidth: "90px"}}>
-            <PopupImage source={x} />
-          </Col>;
-        })}
+        {imageb64Paths.length > 1 &&
+          imageb64Paths.map(x => {
+            <Col style={{minWidth: "90px"}}>
+              <PopupImage source={x} />
+            </Col>;
+          })}
         <Col style={{minWidth: "90px"}}>
           <PopupImage source={img} />
         </Col>
