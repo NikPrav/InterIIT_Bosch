@@ -11,6 +11,7 @@ import Checkbox from "antd/lib/checkbox/Checkbox";
 import {useAuth0} from "@auth0/auth0-react";
 import request from "umi-request";
 import {useParams} from "react-router";
+import axios from 'axios';
 
 function PrefSlider(props) {
   const {max, min, step} = props;
