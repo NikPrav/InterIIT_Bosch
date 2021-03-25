@@ -398,6 +398,11 @@ def feedback(email,workspace_id: int):
 def get_suggestions(email,workspace_id: int):
     return rpc_call()
 
+@app.route('/test')
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def test(email):
+    return {'message':email}
 
 if __name__ == "__main__":
     app.run()

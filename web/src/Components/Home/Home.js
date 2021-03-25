@@ -1,4 +1,4 @@
-import react, {useState} from "react";
+import react, {useState,useEffect} from "react";
 import {Typography, List, Button, Layout, Modal, Card, Space, Dropdown, Menu} from "antd";
 import "./styles.css";
 import {Content} from "antd/lib/layout/layout";
@@ -13,8 +13,43 @@ function Home() {
   const [buttonState, setButtonState] = useState("German DataSet");
   // const user = {name: "Rachit"};
   const {user, isAuthenticated, getAccessTokenSilently} = useAuth0();
-  const [userMetadata, setUserMetadata] = useState(null);
+  // const [userMetadata, setUserMetadata] = useState(null);
   // getUserMetadata();
+
+  const callApi = async () => { 
+    const getUserMetadata = async () => {
+
+      // console.log(user)
+      const domain = "dev-kqx4v2yr.jp.auth0.com";
+  
+      try {
+        const accessToken = await getAccessTokenSilently({
+          audience: `https://dev-kqx4v2yr.jp.auth0.com/api/v2/`,
+          scope: "read:current_user",
+        });
+        const UrlToSendDataTo = `http://localhost:5000/test`;
+        ;
+
+        const CallPrivateApi = await fetch(UrlToSendDataTo, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            User_sub:`${user.sub}`,
+          },
+        });
+        const  message  = await CallPrivateApi.json();
+        console.log(message)
+      } catch (e) {
+        console.log(`Error:${e.message}`);
+      }
+    };
+  
+    getUserMetadata();
+  };
+  useEffect((user) =>  {  
+    console.log('Calling API')  
+    callApi();  
+  },[user]);
+
   const menu = (
     <Menu>
       <Menu.Item>
