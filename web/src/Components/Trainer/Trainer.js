@@ -247,7 +247,7 @@ function Trainer(props) {
   return (
     <Layout className="main_container">
       <Header className="header">
-        <Navbar activePage="2" />
+        <Navbar activePage="2" workspace={workspace_id} />
       </Header>
       <Layout>
         <Content style={{margin: "50px", padding: "20px"}}>
