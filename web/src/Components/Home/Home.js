@@ -12,10 +12,9 @@ const {confirm} = Modal;
 function Home() {
   const {Title, Paragraph, Text, Link} = Typography;
   const [buttonState, setButtonState] = useState("German DataSet");
-  // const user = {name: "Rachit"};
   const {user, isAuthenticated, getAccessTokenSilently} = useAuth0();
-  // const [userMetadata, setUserMetadata] = useState(null);
-  // getUserMetadata();
+  const [accessToken, setAccessToken] = useState(null);
+  let myAccessToken = null;
 
   const loginApi = async () => {
     const getUserMetadata = async () => {
@@ -23,17 +22,18 @@ function Home() {
       const domain = "dev-kqx4v2yr.jp.auth0.com";
 
       try {
-        const accessToken = await getAccessTokenSilently({
+        const localaccessToken = await getAccessTokenSilently({
           audience: `https://dev-kqx4v2yr.jp.auth0.com/api/v2/`,
           scope: "read:current_user",
         });
         const UrlToSendDataTo = `http://localhost:5000/register`;
-
+        myAccessToken = localaccessToken;
+        setAccessToken(localaccessToken);
         const CallUmiApi = await request(UrlToSendDataTo, {
           method: "post",
           headers: {
-            Authorization: `Bearer ${accessToken}`,
-            User_sub: `${user.sub}`,
+            Authorization: `Bearer ${localaccessToken}`,
+            email: `${user.email}`,
           },
         });
         const umimessage = await CallUmiApi;
@@ -46,10 +46,33 @@ function Home() {
     getUserMetadata();
   };
 
+  const getWorkSpaces = async () => {
+    try {
+      const localaccessToken = await getAccessTokenSilently({
+        audience: `https://dev-kqx4v2yr.jp.auth0.com/api/v2/`,
+        scope: "read:current_user",
+      });
+      //console.log(myAccessToken);
+      const userWorkSpaceReq = await request("http://localhost:5000/workspaces", {
+        method: "get",
+        headers: {
+          Authorization: `Bearer ${localaccessToken}`,
+          email: `${user.email}`,
+        },
+      });
+
+      const umimessage = await userWorkSpaceReq;
+      console.log(umimessage);
+    } catch (e) {
+      console.log(e.message);
+    }
+  };
+
   useEffect(
     async user => {
       console.log("Calling API");
       await loginApi();
+      await getWorkSpaces();
     },
     [user]
   );
@@ -105,7 +128,34 @@ function Home() {
     setisWorkspaceModalVisible(true);
   };
 
-  const handleOk = () => {
+  const createWorkSpaceApi = async () => {
+    try {
+      const localaccessToken = await getAccessTokenSilently({
+        audience: `https://dev-kqx4v2yr.jp.auth0.com/api/v2/`,
+        scope: "read:current_user",
+      });
+      //console.log(myAccessToken);
+      const userWorkSpaceCreate = await request("http://localhost:5000/workspaces", {
+        method: "post",
+        headers: {
+          Authorization: `Bearer ${localaccessToken}`,
+          email: `${user.email}`,
+        },
+        data: {
+          name: "Why does this need a name?",
+        },
+      });
+      console.log("Create Workspace Sent");
+      const umimessage = await userWorkSpaceCreate;
+      console.log(umimessage);
+    } catch (e) {
+      console.log(e.message);
+    }
+  };
+
+  const handleOk = async () => {
+    await createWorkSpaceApi();
+    await getWorkSpaces();
     setisWorkspaceModalVisible(false);
   };
 
@@ -167,7 +217,7 @@ function Home() {
                 </Button>,
                 <Button
                   key="edit"
-                  href="/editor"
+                  onClick={handleOk}
                   type="primary"
                   style={{paddingRight: "5px", paddingLeft: "5px", marginRight: "5px"}}
                 >
@@ -206,7 +256,7 @@ function Home() {
                     disabled
                     style={{float: "right"}}
                     className="button"
-                    href="/editor"
+                    href="/editor?workspace_id={}"
                   >
                     Delete
                   </Button>
@@ -232,7 +282,6 @@ function Home() {
                     style={{float: "right", alignSelf: "flex-end"}}
                     onClick={showWorkspaceModal}
                   >
-                    {" "}
                     CREATE NEW
                   </Button>
                 </List.Item>

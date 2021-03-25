@@ -73,7 +73,8 @@ function Preferences() {
   );
 }
 
-function Editor() {
+function Editor(props) {
+  const {workspace_id} = props;
   const {Header, Footer, Sider, Content} = Layout;
   const [collapsed, setcollapsed] = useState(false);
   const [selectedSection, setselectedSection] = useState(0);

@@ -86,10 +86,10 @@ function Preferences() {
           <Typography.Text>Batch Size:</Typography.Text> <PrefSlider min={1} max={20} step={1} />
         </p>
         <p>
-          <Typography.Text>Epochs</Typography.Text> <PrefSlider min={1} max={20} step={1} />
+          <Typography.Text>Epochs</Typography.Text> <PrefSlider min={1} max={2000} step={100} />
         </p>
         <p>
-          <Typography.Text>Learning Rate</Typography.Text> <PrefSlider min={0} max={1} step={0.1} />
+          <Typography.Text>Learning Rate</Typography.Text> <PrefSlider min={0} max={5} step={0.2} />
         </p>
         <p>
           <Typography.Text>Test-Train Split</Typography.Text>{" "}
@@ -127,34 +127,6 @@ function Trainer() {
         <Navbar activePage="2" />
       </Header>
       <Layout>
-        {/* <Sider collapsible collapsed={collapsed} theme="light" onCollapse={collapseToggle}>
-          <Menu theme="light" mode="inline">
-            <Menu.Item
-              key="0"
-              icon={<FolderAddFilled />}
-              onClick={() => {
-                setselectedSection(0);
-              }}
-            >
-              
-              Import
-            </Menu.Item>
-            <Menu.Item
-              key="1"
-              icon={<IoSettingsSharp />}
-              onClick={() => {
-                setselectedSection(1);
-              }}
-            >
-              {" "}
-              Settings
-            </Menu.Item>
-            <Menu.Item key="3" icon={<GoGraph />}>
-              {" "}
-              Graph
-            </Menu.Item>
-          </Menu>
-        </Sider> */}
         <Content style={{margin: "50px", padding: "20px"}}>
           <Card style={{minHeight: "60vh"}}>
             <Preferences />
