@@ -496,8 +496,7 @@ def add_image_metadata(email, workspace_id: str):
 
 @app.route("/workspaces/<int:workspace_id>/images/<string:image_id>", methods=[post])
 @cross_origin(headers=["Content-Type", "Authorization"])
-@requires_auth
-def add_image(email, workspace_id: str, image_id: str):
+def add_image(workspace_id: str, image_id: str):
     """
     Post image.
     ---
