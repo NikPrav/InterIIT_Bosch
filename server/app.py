@@ -466,21 +466,21 @@ def set_model_params(email, workspace_id: int):
         required: true
       - name: l
         description: learning rate
-        in: query
+        in: body
         type: int
         required: true
       - name: t
         description: Test train split as percentage of test.
-        in: query
+        in: body
         type: int
       - name: e
         description: Number of epochs
-        in: query
+        in: body
         type: int
       - name: a
         description: Augmentation type
         enum: [random, all, selected]
-        in: query
+        in: body
         type: string
       - name: f
         in: query
@@ -489,9 +489,11 @@ def set_model_params(email, workspace_id: int):
       200:
         description: Updated params.
     """
-    all_args = dict(request.args)
+    json_data = request.get_json()
+    if not json_data:
+        return {"message": "No input data provided"}, 400
     try:
-        params = ModelParams(workspace_id=workspace_id, **all_args).dict()
+        params = ModelParams(workspace_id=workspace_id, **json_data).dict()
         params.pop("workspace_id")
         Workspace.objects(workspace_id=workspace_id).update_one(
             model_settings=params, updated_at=datetime.utcnow()
