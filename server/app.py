@@ -184,10 +184,19 @@ def not_found(e):
 
 @app.route("/info", methods=["GET"])
 @cross_origin(headers=["Content-Type", "Authorization"])
-@requires_auth
-def get_project_info(email):
+def get_project_info():
     info = Info.objects.exclude("_id").to_json()
     return info
+
+
+@app.route("/register", methods=[post])
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def add_user_if_not_exists(email):
+    if not User.objects(email=email):
+        num = User.objects.count()
+        user = User(user_id=num + 1, email=email)
+        user.save()
 
 
 @app.route("/workspaces", methods=["GET"])
