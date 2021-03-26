@@ -541,7 +541,7 @@ def add_image_metadata(email, workspace_id: str):
     workspace_name = f"workspace{workspace_id:03d}"
     workspace_path = os.path.join(cnf.WORKSPACES_BASE_PATH, workspace_name)
     cls_name = f"{class_id:05d}"
-    cls_path = os.path.join(workspace_path, cls_name)
+    cls_path = os.path.join(workspace_path, cnf.IMAGES_FOLDER, cls_name)
     n = len([x for x in os.listdir(cls_path) if x[:4] == "user"]) + 1
     with open(f"user_{n:03d}", "wb") as fh:
         fh.write(base64.decodebytes(image_bytes))
@@ -708,6 +708,17 @@ def get_model_info(email, workspace_id: int):
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
 def infer(email, workspace_id: int):
+    json_data = request.get_json()
+    image = json_data["image"]
+    class_id = json_data["id"]
+    image_bytes = image.encode("ascii")
+    workspace_name = f"workspace{workspace_id:03d}"
+    workspace_path = os.path.join(cnf.WORKSPACES_BASE_PATH, workspace_name)
+    ls_path = os.path.join(workspace_path, cnf.INF_FOLDER)
+    n = len([x for x in os.listdir(ls_path) if x[:4] == "user"]) + 1
+    f = os.path.join(ls_path, f"user_{n:03d}")
+    with open(f, "wb") as fh:
+        fh.write(base64.decodebytes(image_bytes))
     return rpc_call()
 
 
