@@ -4,6 +4,7 @@ import csv
 import json
 import os
 import pathlib
+import shutil
 import typing as t
 from datetime import datetime
 from functools import wraps
@@ -36,7 +37,7 @@ from core import (
 from dbmodels import Class, Dataset, Globals, Info, User, Workspace
 from req_models import ClassCreate, ModelParams, WorkspaceCreate, WorkspacePatch
 
-#from dl_main import dl_main
+# from dl_main import dl_main
 
 app = Flask(__name__)
 
@@ -190,13 +191,13 @@ def not_found(e):
 @app.route("/pictest", methods=["POST"])
 def savingpic():
     request_data = request.get_json()
-    print('hi')
+    print("hi")
     app.logger.info(request_data)
     # print(request_data)
-    image = request_data['image']
-    image = image.split(',')[1]
+    image = request_data["image"]
+    image = image.split(",")[1]
 
-    image_bytes = image.encode('ascii')
+    image_bytes = image.encode("ascii")
     with open("PicTest.png", "wb") as fh:
         fh.write(base64.decodebytes(image_bytes))
 
@@ -279,6 +280,7 @@ def add_user_if_not_exists(email):
             workspace_id=num,
         )
     return {"message": "User already exists."}, 208
+
 
 @app.route("/workspaces", methods=["GET"])
 @cross_origin(headers=["Content-Type", "Authorization"])
@@ -435,7 +437,7 @@ def edit_workspace(email, workspace_id: int):
 def delete_workspace(email, workspace_id: int):
     workspace_name = f"workspace{workspace_id:03d}"
     Workspace.objects(workspace_id=workspace_id).delete()
-    os.remove(os.path.join(cnf.WORKSPACES_BASE_PATH, workspace_name))
+    os.remove(shutil.remove(cnf.WORKSPACES_BASE_PATH, workspace_name))
     return {"message": "success"}
 
 
@@ -722,11 +724,13 @@ def feedback(email, workspace_id: int):
 def get_suggestions(email, workspace_id: int):
     return rpc_call()
 
-@app.route('/test')
+
+@app.route("/test")
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
 def test(email):
-    return {'message':email}
+    return {"message": email}
+
 
 if __name__ == "__main__":
     app.run()
