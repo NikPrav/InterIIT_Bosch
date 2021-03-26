@@ -83,7 +83,9 @@ function Editor(props) {
   const {Header, Footer, Sider, Content} = Layout;
   const [collapsed, setcollapsed] = useState(false);
   const [selectedSection, setselectedSection] = useState(0);
-	const [classes, setClasses] = useState([])
+	const [classes, setClasses] = useState([]);
+	const [imagePaths, setImagePaths] = useState([]);
+
   const collapseToggle = () => {
     setcollapsed(!collapsed);
   };
@@ -128,7 +130,36 @@ try {
       console.log(e.message);
     }
 	}
+const getImagePaths = async () => {
+try {
+      const localaccessToken = await getAccessTokenSilently({
+        audience: `https://dev-kqx4v2yr.jp.auth0.com/api/v2/`,
+        scope: "read:current_user",
+      });
 
+      const userWorkSpaceReq = await request(`${process.env.REACT_APP_API_URL}/workspaces/${wid}/images`, {
+        method: "get",
+        headers: {
+          Authorization: `Bearer ${localaccessToken}`,
+          email: `${user.email}`,
+        },
+      });
+      const umimessage = await userWorkSpaceReq;
+			umimessage.map(x => atob(x));
+	umimessage.map(x => {
+		let n = x.search('/');
+		return {
+			"int": parseInt(x.substr(0, n), 10),
+			"path": btoa(x)
+		}
+	})
+			setImagePaths(umimessage);
+
+      console.log(umimessage);
+    } catch (e) {
+      console.log(e.message);
+    }
+	}
 
 
   const getWorkSpaceDetails = async () => {
@@ -243,6 +274,7 @@ try {
           <Card style={{minHeight: "100vh"}}>
             {selectedSection ? <Preferences /> : <ImageRow DataClass="Stop Sign" />}
             {/* {selectedSection ? <Preferences /> : <ImageRow DataClass="Stop Sign" />} */}
+						{classes.map(x => <ImageRow DataClass={x.name} ImagePath={})}
           </Card>
         </Content>
       </Layout>
