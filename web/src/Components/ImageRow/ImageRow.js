@@ -72,16 +72,16 @@ function ImageRow(props) {
     // fmData.append("image", file);
     try{
         
-      // const base64data = await toBase64(file);
+      const base64data = await toBase64(file);
       
-      // console.log(base64data);
+      console.log(base64data);
       // console.log(atob(base64data))/
    
       const UrlToSendDataTo = 'http://localhost:5000/pictest'
       const response = await request(UrlToSendDataTo, {
         method: "post",
         headers: { 'Content-Type': 'application/json' },
-        body: { image: file }
+        body: JSON.stringify({ image: base64data })
       });
       const res = response
       console.log(`response:${res}`)

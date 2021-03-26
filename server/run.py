@@ -32,19 +32,15 @@ def decode_base64(data, altchars=b'+/'):
 @app.route("/pictest", methods=["POST"])
 def savingpic():
     request_data = request.get_json()
-    # print("hi")
-    app.logger.info('hi')
-    app.logger.info(f'request_data:{request_data}')
-    print(request_data)
-    image = request_data["image"]
-    print(image)
+    print('hi')
+    app.logger.info(request_data)
+    # print(request_data)
+    image = request_data['image']
+    image = image.split(',')[1]
 
-    # # Workaround for specific case
-    # image = image.split(",")[1]
-
-    image_bytes = image.encode("ascii")
+    image_bytes = image.encode('ascii')
     with open("PicTest.png", "wb") as fh:
-        fh.write(image_bytes)
+        fh.write(base64.decodebytes(image_bytes))
 
     # # transf = request_data['transform']
     # transform_dict = {
