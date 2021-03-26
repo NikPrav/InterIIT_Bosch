@@ -13,7 +13,7 @@ function App() {
     <div className="App">
       <Auth0Provider
         domain="dev-kqx4v2yr.jp.auth0.com"
-        clientId="DBJyWZCoiZFCccUM5C50YYSPrBXn08oL"
+        clientId="vu659ED5qK98f3jQF4JfDcI6GSKheHa4"
         redirectUri={"http://localhost:3000/home"}
         audience='https://dev-kqx4v2yr.jp.auth0.com/api/v2/'
 				scope="read:current_user"
