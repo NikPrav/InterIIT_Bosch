@@ -7,7 +7,6 @@ import {useParams} from "react-router";
 
 function PrefSlider(props) {
   const {max, min, step, defaultValue, stateFunction, sliderValue} = props;
-  console.log(defaultValue);
   const handleChange = val => {
     stateFunction(val);
   };
@@ -256,11 +255,13 @@ function Trainer(props) {
               optimizerfn={optimizerfn}
               setOptimizerfn={setOptimizerfn}
               batchSize={batchSize}
+							setBatchSize={setBatchSize}
               epochs={epochs}
               setEpochs={setEpochs}
               learningRate={learningRate}
               setLearningRate={setLearningRate}
               testTrainSplit={testTrainSplit}
+							setTestTrainSplit={setTestTrainSplit}
             />
             <Button
               type="primary"

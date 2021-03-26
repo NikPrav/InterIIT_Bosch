@@ -1,6 +1,9 @@
 import base64
+import contextlib
+import csv
 import json
 import os
+import pathlib
 import typing as t
 from datetime import datetime
 from functools import wraps
@@ -17,6 +20,7 @@ from jose import jwt
 from PIL import Image
 from pydantic import ValidationError
 from werkzeug.datastructures import Headers
+from werkzeug.utils import secure_filename
 from werkzeug.wrappers import BaseResponse
 
 import torchcommands
@@ -29,8 +33,9 @@ from core import (
     move_to_trash,
     remove_dataset_from_workspace,
 )
-from dbmodels import Dataset, Globals, Info, User, Workspace
-from req_models import ModelParams, WorkspaceCreate, WorkspacePatch
+from dbmodels import Class, Dataset, Globals, Info, User, Workspace
+from req_models import ClassCreate, ModelParams, WorkspaceCreate, WorkspacePatch
+from dl_main import dl_main
 
 app = Flask(__name__)
 
@@ -127,16 +132,6 @@ def requires_auth(f):
                     audience=API_AUDIENCE,
                     issuer="https://" + AUTH0_DOMAIN + "/",
                 )
-                # # headers = {"Authorization": auth}
-                # # response = requests.get(
-                # #     f"https://dev-kqx4v2yr.jp.auth0.com/api/v2/users/{ustub}",
-                # #     headers=headers,
-                # # )
-                # # response_json = response.json()
-                # # email = response_json.get("email")
-                # domain = "dev-kqx4v2yr.jp.auth0.com"
-                # email = Users(domain).userinfo(token)["email"]
-                # # email = "ch17btech11023@iith.ac.in"
 
             except jwt.ExpiredSignatureError:
                 raise AuthError(
@@ -275,6 +270,13 @@ def add_user_if_not_exists(email):
         user = User(user_id=num + 1, email=email)
         user.save()
         return user.to_json(), 201
+        workspace = Workspace(
+            **data,
+            user_email=email,
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
+            workspace_id=num,
+        )
     return {"message": "User already exists."}, 208
 
 @app.route("/workspaces", methods=["GET"])
@@ -409,13 +411,88 @@ def edit_workspace(email, workspace_id: int):
         existing_datasets = set(
             Workspace.objects(workspace_id=workspace_id)[0].datasets
         )
-        merged_datasets = list({*existing_datasets, *data["datasets"]})
-        data["datasets"] = merged_datasets
+        datasets = existing_datasets
+        if data["datasets_to_delete"]:
+            datasets -= set(data.pop("datasets_to_delete"))
+        if data["datasets_to_add"]:
+            datasets += set(data.pop("datasets_to_add"))
+        data["datasets"] = list(datasets)
+        for dataset in datasets - existing_datasets:
+            add_dataset_to_workspace(dataset)
+        for dataset in existing_datasets - datasets:
+            remove_dataset_from_workspace(dataset)
         Workspace.objects(workspace_id=workspace_id).update_one(**data)
         return Workspace.objects(workspace_id=workspace_id).to_json()
     except ValidationError as e:
         app.logger.error("%s", e)
         return {"message": f"{e}"}, 400
+
+
+@app.route("/workspaces/<int:workspace_id>", methods=[delete])
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def delete_workspace(email, workspace_id: int):
+    workspace_name = f"workspace{workspace_id:03d}"
+    Workspace.objects(workspace_id=workspace_id).delete()
+    os.remove(cnf.WORKSPACES_BASE_PATH, workspace_name)
+    return {"message": "success"}
+
+
+@app.route("/workspaces/<int:workspace_id>/classes", methods=[get])
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def get_classes(email, workspace_id):
+    workspace_name = f"workspace{workspace_id:03d}"
+    workspace_path = os.path.join(cnf.WORKSPACES_BASE_PATH, workspace_name)
+    with open(os.path.join(workspace_path, cnf.CLASSES_FILE), "r") as f:
+        reader = csv.reader(f)
+        data = list(reader)
+        dict_ = dict(zip([x, y] for [x, y] in data))
+    return dict_
+
+
+@app.route("/workspaces/<int:workspace_id>/classes", methods=[post])
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def add_class(email, workspace_id):
+    json_data = request.get_json()
+    if not json_data:
+        return {"message": "No input data provided"}, 400
+    try:
+        data = ClassCreate(**json_data).dict()
+        if data["classname"]:
+            workspace_name = f"workspace{workspace_id:03d}"
+            workspace_path = os.path.join(cnf.WORKSPACES_BASE_PATH, workspace_name)
+            imgs_path = os.path.join(workspace_path, cnf.IMAGES_FOLDER)
+            num = max(int(sorted(os.listdir(imgs_path))[:-1]), 80) + 1
+            class_folder_name = f"{num:05d}"
+            with open(os.path.join(workspace_path, cnf.CLASSES_FILE), "a") as f:
+                writer = csv.writer(f)
+                writer.writerow([num, class_folder_name])
+            pathlib.Path(
+                os.path.join(workspace_path, class_folder_name).mkdir(
+                    parents=True, exist_ok=True
+                )
+            )
+    except ValidationError as e:
+        app.logger.error("%s", e)
+        return {"message": f"{e}"}, 400
+    return {}
+
+
+@app.route("/workspaces/<int:workspace_id>/classes/<int:class_id>", methods=[delete])
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def delete_class_from_workspace(email, workspace_id, class_id):
+    workspace_name = f"workspace{workspace_id:03d}"
+    workspace_path = os.path.join(cnf.WORKSPACES_BASE_PATH, workspace_name)
+    class_folder_name = f"{class_id:05d}"
+    with contextlib.suppress(FileNotFoundError):
+        os.remove(os.path.join(workspace_path, cnf.IMAGES_FOLDER, class_folder_name))
+    with contextlib.suppress(FileNotFoundError):
+        os.remove(
+            os.path.join(workspace_path, cnf.VALIDATION_FOLDER, class_folder_name)
+        )
 
 
 @app.route("/workspaces/<int:workspace_id>/images", methods=["GET"])
@@ -454,14 +531,24 @@ def add_image_metadata(email, workspace_id: str):
       201:
         description: Metadata has been added.
     """
+    json_data = request.get_json()
+    image = json_data["image"]
+    class_id = json_data["id"]
+    image_bytes = image.encode("ascii")
+    workspace_name = f"workspace{workspace_id:03d}"
+    workspace_path = os.path.join(cnf.WORKSPACES_BASE_PATH, workspace_name)
+    cls_name = f"{class_id:05d}"
+    cls_path = os.path.join(workspace_path, cls_name)
+    n = len([x for x in os.listdir(cls_path) if x[:4] == "user"]) + 1
+    with open(f"user_{n:03d}", "wb") as fh:
+        fh.write(base64.decodebytes(image_bytes))
     info = {}
     return info, 201
 
 
-@app.route("/workspaces/<int:workspace_id>/images/<string:image_id>", methods=[put])
+@app.route("/workspaces/<int:workspace_id>/images/<string:image_id>", methods=[post])
 @cross_origin(headers=["Content-Type", "Authorization"])
-@requires_auth
-def add_image(email, workspace_id: str, image_id: str):
+def add_image(workspace_id: str, image_id: str):
     """
     Post image.
     ---
@@ -474,6 +561,12 @@ def add_image(email, workspace_id: str, image_id: str):
       201:
         description: Image has been added.
     """
+    if "file" not in request.files:
+        return {"message": "No input data provided"}, 400
+    f = request.files["file"]
+    if f:
+        filename = secure_filename(f.filename)
+        f.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
     info = {}
     return info, 201
 
@@ -503,6 +596,14 @@ def get_image(email, workspace_id: str, image_id: str):
     return send_from_directory(cnf.WORKSPACES_BASE_PATH, image_path), 200
 
 
+@app.route("/workspaces/<int:workspace_id>/images/<string:image_id>", methods=[delete])
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def delete_image(email, workspace_id, image_id):
+    move_to_trash(workspace_id, [image_id])
+    return {}
+
+
 @app.route(f"{w_path}/rpc/setModelParams", methods=[post])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
@@ -517,21 +618,21 @@ def set_model_params(email, workspace_id: int):
         required: true
       - name: l
         description: learning rate
-        in: query
+        in: body
         type: int
         required: true
       - name: t
         description: Test train split as percentage of test.
-        in: query
+        in: body
         type: int
       - name: e
         description: Number of epochs
-        in: query
+        in: body
         type: int
       - name: a
         description: Augmentation type
         enum: [random, all, selected]
-        in: query
+        in: body
         type: string
       - name: f
         in: query
@@ -540,9 +641,11 @@ def set_model_params(email, workspace_id: int):
       200:
         description: Updated params.
     """
-    all_args = dict(request.args)
+    json_data = request.get_json()
+    if not json_data:
+        return {"message": "No input data provided"}, 400
     try:
-        params = ModelParams(workspace_id=workspace_id, **all_args).dict()
+        params = ModelParams(workspace_id=workspace_id, **json_data).dict()
         params.pop("workspace_id")
         Workspace.objects(workspace_id=workspace_id).update_one(
             model_settings=params, updated_at=datetime.utcnow()
@@ -574,14 +677,14 @@ def set_augmentation(email, workspace_id):
 def start_training(email, workspace_id: int):
     workspace = json.loads(Workspace.objects.get(workspace_id=workspace_id).to_json())
     print(workspace)
-    return rpc_call()
+    return dl_main(workspace)
 
 
 @app.route(f"{w_path}/rpc/getTrainInfo", methods=[get])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
 def get_training_info(email, workspace_id: int):
-    return rpc_call()
+    return Workspace.objects.get(workspace_id=workspace_id).state
 
 
 @app.route(f"{w_path}/rpc/stopTrain", methods=[post])

@@ -1,10 +1,18 @@
 import mongoengine as me
-from configs import cnf
 from mongoengine import Document, EmbeddedDocument, connect
 from mongoengine.errors import NotUniqueError, OperationError
-from mongoengine.fields import (BaseField, DateTimeField, DictField,
-                                EmailField, IntField, ListField, ObjectIdField,
-                                StringField)
+from mongoengine.fields import (
+    BaseField,
+    DateTimeField,
+    DictField,
+    EmailField,
+    IntField,
+    ListField,
+    ObjectIdField,
+    StringField,
+)
+
+from configs import cnf
 
 connect(db=cnf.APP_CONFIG.DB)
 
@@ -25,7 +33,9 @@ class Workspace(Document):
     test_preferred_images = ListField(StringField())
     train_preferred_images = ListField(StringField())
     model_results = DictField()
+    explain_results = DictField()
     user_email = EmailField()
+    state = DictField()
     created_at = DateTimeField()
     updated_at = DateTimeField()
 
@@ -46,3 +56,8 @@ class User(Document):
     user_id = IntField()
     email = EmailField()
     token = StringField()
+
+
+class Class(Document):
+    class_id = IntField(primary_key=True)
+    class_name = StringField()

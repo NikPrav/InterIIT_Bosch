@@ -5,25 +5,27 @@ import {Link} from "react-router-dom";
 
 function Navbar(props) {
   const {Step} = Steps;
+
   const {activePage, isOutside, workspace} = props;
+
   const {user, isAuthenticated, logout} = useAuth0();
   return (
     <Layout.Header>
       <div className="logo"></div>
       <Menu theme="dark" mode="horizontal" selectedKeys={activePage}>
         {!isOutside && (
-          <Menu.Item key="1" onClick="/editor">
-            <a href="/editor">Dataset</a>
+          <Menu.Item key="1" onClick={`/editor?workspace_id=${workspace}`}>
+            <Link to={`/editor?workspace_id=${workspace}`}>Dataset</Link>
           </Menu.Item>
         )}
         {!isOutside && (
-          <Menu.Item key="2" onClick="/trainer">
-            <Link href={`/trainer?workspace_id=${workspace}`}>Trainer</Link>
+          <Menu.Item key="2">
+            <Link to={`/trainer?workspace_id=${workspace}`}>Trainer</Link>
           </Menu.Item>
         )}
         {!isOutside && (
-          <Menu.Item key="3" onClick="/trainer">
-            <Link href={`/infer?workspace_id=${workspace}`}>Inference</Link>
+          <Menu.Item key="3">
+            <Link to={`/infer?workspace_id=${workspace}`}>Inference</Link>
           </Menu.Item>
         )}
 
@@ -41,13 +43,14 @@ function Navbar(props) {
           Sign out
         </Button>
         {activePage == 1 && (
-          <Button
-            type="primary"
-            href="/trainer"
-            style={{float: "right", paddingLeft: "10px", marginTop: "15px", marginRight: "10px"}}
-          >
-            <Link href={`/editor?workspace_id=${workspace}`}>Proceed</Link>
-          </Button>
+          <Link to={`/trainer?workspace_id=${workspace}`}>
+            <Button
+              type="primary"
+              style={{float: "right", paddingLeft: "10px", marginTop: "15px", marginRight: "10px"}}
+            >
+              Proceed
+            </Button>
+          </Link>
         )}
       </Menu>
     </Layout.Header>

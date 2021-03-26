@@ -77,12 +77,15 @@ function Preferences() {
 }
 
 function Editor(props) {
-	const wid = (parseInt(props.location.search.substr(14), 10));
+  const wid = parseInt(props.location.search.substr(14), 10);
   const [workspaceDetails, setWorkspaceDetails] = useState({});
   const {user, isAuthenticated, getAccessTokenSilently} = useAuth0();
   const {Header, Footer, Sider, Content} = Layout;
   const [collapsed, setcollapsed] = useState(false);
   const [selectedSection, setselectedSection] = useState(0);
+  const [classes, setClasses] = useState([]);
+  const [imagePaths, setImagePaths] = useState([]);
+
   const collapseToggle = () => {
     setcollapsed(!collapsed);
   };
@@ -103,6 +106,65 @@ function Editor(props) {
   };
   const onCheckboxChange = checkedValues => {
     console.log("checked = ", checkedValues);
+  };
+
+  const getClasses = async () => {
+    try {
+      const localaccessToken = await getAccessTokenSilently({
+        audience: `https://dev-kqx4v2yr.jp.auth0.com/api/v2/`,
+        scope: "read:current_user",
+      });
+
+      const userWorkSpaceReq = await request(
+        `${process.env.REACT_APP_API_URL}/workspaces/${wid}/classes`,
+        {
+          method: "get",
+          headers: {
+            Authorization: `Bearer ${localaccessToken}`,
+            email: `${user.email}`,
+          },
+        }
+      );
+      const umimessage = await userWorkSpaceReq;
+
+      console.log(umimessage);
+      setClasses(umimessage);
+    } catch (e) {
+      console.log(e.message);
+    }
+  };
+  const getImagePaths = async () => {
+    try {
+      const localaccessToken = await getAccessTokenSilently({
+        audience: `https://dev-kqx4v2yr.jp.auth0.com/api/v2/`,
+        scope: "read:current_user",
+      });
+
+      const userWorkSpaceReq = await request(
+        `${process.env.REACT_APP_API_URL}/workspaces/${wid}/images`,
+        {
+          method: "get",
+          headers: {
+            Authorization: `Bearer ${localaccessToken}`,
+            email: `${user.email}`,
+          },
+        }
+      );
+      const umimessage = await userWorkSpaceReq;
+      umimessage.map(x => atob(x));
+      umimessage.map(x => {
+        let n = x.search("/");
+        return {
+          int: parseInt(x.substr(0, n), 10),
+          path: btoa(x),
+        };
+      });
+      setImagePaths(umimessage);
+
+      console.log(umimessage);
+    } catch (e) {
+      console.log(e.message);
+    }
   };
 
   const getWorkSpaceDetails = async () => {
@@ -135,9 +197,11 @@ function Editor(props) {
     },
     [user]
   );
+  console.log(typeof wid);
+  console.log(wid);
   return (
     <Layout className="main_container">
-      <Navbar activePage="1" />
+      <Navbar activePage="1" workspace={wid} />
       <Layout>
         <Sider collapsible collapsed={collapsed} theme="light" onCollapse={collapseToggle}>
           <Menu theme="light" mode="inline">
@@ -215,6 +279,14 @@ function Editor(props) {
           <Card style={{minHeight: "100vh"}}>
             {selectedSection ? <Preferences /> : <ImageRow DataClass="Stop Sign" />}
             {/* {selectedSection ? <Preferences /> : <ImageRow DataClass="Stop Sign" />} */}
+            {selectedSection &&
+              classes.map(x => (
+                <ImageRow
+                  DataClass={x.name}
+                  ImagePaths={imagePaths.filter(y => y.id == x.id)}
+                  workspace_id={11}
+                />
+              ))}
           </Card>
         </Content>
       </Layout>
