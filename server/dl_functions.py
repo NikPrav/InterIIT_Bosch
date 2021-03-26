@@ -444,3 +444,202 @@ def main(args):
     
 
 #main(args)
+
+
+import os
+import cv2
+import matplotlib.pyplot as plt
+import base64
+from aug import random_contrast, affine_shear, affine_translate, rotate, hue,saturation,random_brightness, add_speed, random_flip,correct_exposure, lightness,add_snow, add_rain, add_fog,add_autumn
+import numpy as np
+
+# These list contains the types of augmentations available 
+aug_types_normal = ["random_contrast", "affine_shear", "affine_translate", "rotate", "hue",
+                    "saturation", "random_brightness", "add_speed", "random_flip",
+                    "correct_exposure", "lightness"]
+aug_types_weather = ["add_snow", "add_rain", "add_fog",
+                     "add_autumn"]
+aug_types_extension = {"random_contrast":"rc", "affine_shear":"as", "affine_translate":"at",
+                       "rotate":"rt", "hue":"hu", "saturation":"st", "random_brightness":"rb",
+                       "add_speed":"sp", "random_flip":"rf", "correct_exposure":"ce",
+                       "add_snow":"sn", "add_rain":"rn", "add_fog":"fg", "add_autumn":"au",
+                      "lightness":"li"}
+
+"""
+Output: Dictonaries (And saves images in the same destinatino as that of input)
+
+Args: A dictionary which contains the path of the input as the key and the augmentations as its value 
+"""
+
+
+def path_to_base64(path):
+    return base64.urlsafe_b64encode(path.encode("ascii")).decode("ascii")
+
+
+def applyAugmentations(metadata):
+    dict1 = {}
+    dict2 = {}
+    for i in metadata:
+        if(os.path.isdir(i)):
+            if(metadata[i][0][0] == "random"):
+                for j in os.listdir(i):
+                    print('Augmenting for class',j)
+                    for im in os.listdir(os.path.join(i,j)):
+                        if(im.endswith('.csv')):
+                            continue
+                        aug = [aug_types_weather[np.random.randint(0, len(aug_types_weather))],
+                               aug_types_normal[np.random.randint(0, len(aug_types_normal))]]
+                        image = cv2.resize(plt.imread(os.path.join(i,j,im)), (45, 45))
+                        if(image.shape[2]==4):
+                            image = image[:, :, :3]
+                        if(type(image[0][0][0])==np.float32 or type(image[0][0][0])==np.float64):
+                            image = (255*image).astype(np.uint8)
+                        name = ""
+                        for k in aug:
+                            image = eval(k+"(image)")
+                            name += aug_types_extension[k]+"_"
+                        path1 = os.path.join(i,j,im)
+                        path2 = os.path.join(i,j,name+im)
+                        plt.imsave(path2, image)
+                        path1 = path1.split("/")[-3:]
+                        path2 = path2.split("/")[-3:]
+                        p1 = ""
+                        for p in path1:
+                            p1 = os.path.join(p1, p)
+                        p2 = ""
+                        for p in path2:
+                            p2 = os.path.join(p2, p)
+                        p1 = path_to_base64(p1)
+                        p2 = path_to_base64(p2)
+                        if(p1 not in dict1.keys()):
+                            dict1[p1] = {p2:aug}
+                        else:
+                            temp = dict1[p1]
+                            temp[p2] = aug
+                            dict1[p1] = temp
+                        dict2[p2] = p1
+            else:
+                for aug in metadata[i]:
+                    l1 = []
+                    l2 = []
+                    for a in aug:
+                        if a in aug_types_weather:
+                            l1.append(a)
+                        else:
+                            l2.append(a)
+                    aug = l1+l2
+                    for j in os.listdir(i):
+                        if(j.endswith('.csv')):
+                            continue
+                        print('Augmenting for class',j)
+
+                        for im in os.listdir(os.path.join(i,j)):
+                            if(im.endswith('.csv')):
+                                continue
+                            image = cv2.resize(plt.imread(os.path.join(i,j,im)), (45, 45))
+                            if(image.shape[2]==4):
+                                image = image[:, :, :3]
+                            if(type(image[0][0][0])==np.float32 or type(image[0][0][0])==np.float64):
+                                image = (255*image).astype(np.uint8)
+                            name = ""
+                            for k in aug:
+                                image = eval(k+"(image)")
+                                name += aug_types_extension[k]+"_"
+                            path1 = os.path.join(i,j,im)
+                            path2 = os.path.join(i,j,name+im)
+                            plt.imsave(path2, image)
+                            path1 = path1.split("/")[-3:]
+                            path2 = path2.split("/")[-3:]
+                            p1 = ""
+                            for p in path1:
+                                p1 = os.path.join(p1, p)
+                            p2 = ""
+                            for p in path2:
+                                p2 = os.path.join(p2, p)  
+                            p1 = path_to_base64(p1)
+                            p2 = path_to_base64(p2)
+                            if(p1 not in dict1.keys()):
+                                dict1[p1] = {p2:aug}
+                            else:
+                                temp = dict1[p1]
+                                temp[p2] = aug
+                                dict1[p1] = temp
+                            dict2[p2] = p1
+        else:
+            if(metadata[i][0][0] == "random"):
+                aug = [aug_types_weather[np.random.randint(0, len(aug_types_weather))],
+                       aug_types_normal[np.random.randint(0, len(aug_types_normal))]]
+                image = cv2.resize(plt.imread(i), (45, 45))
+                if(image.shape[2]==4):
+                    image = image[:, :, :3]
+                if(type(image[0][0][0])==np.float32 or type(image[0][0][0])==np.float64):
+                    image = (255*image).astype(np.uint8)
+                name = ""
+                for k in aug:
+                    image = eval(k+"(image)")
+                    name += aug_types_extension[k]+"_"
+                path = "/"
+                for p in i.split("/")[:-1]:
+                    path = os.path.join(path, p)
+                path = os.path.join(path, name+i.split("/")[-1])
+                plt.imsave(path, image)
+                path1 = i.split("/")[-3:]
+                path2 = path.split("/")[-3:]
+                p1 = ""
+                for p in path1:
+                    p1 = os.path.join(p1, p)
+                p2 = ""
+                for p in path2:
+                    p2 = os.path.join(p2, p)    
+                p1 = path_to_base64(p1)
+                p2 = path_to_base64(p2)
+                if(p1 not in dict1.keys()):
+                    dict1[p1] = {p2:aug}
+                else:
+                    temp = dict1[p1]
+                    temp[p2] = aug
+                    dict1[p1] = temp
+                dict2[p2] = p1
+            else:
+                for aug in metadata[i]:
+                    l1 = []
+                    l2 = []
+                    for a in aug:
+                        if a in aug_types_weather:
+                            l1.append(a)
+                        else:
+                            l2.append(a)
+                    aug = l1+l2
+                    image = cv2.resize(plt.imread(i), (45, 45))
+                    if(image.shape[2]==4):
+                        image = image[:, :, :3]
+                    if(type(image[0][0][0])==np.float32 or type(image[0][0][0])==np.float64):
+                        image = (255*image).astype(np.uint8)
+                    name = ""
+                    for k in aug:
+                        image = eval(k+"(image)")
+                        name += aug_types_extension[k]+"_"
+                    path = "/"
+                    for p in i.split("/")[:-1]:
+                        path = os.path.join(path, p)
+                    path = os.path.join(path, name+i.split("/")[-1])
+                    plt.imsave(path, image)
+                    path1 = i.split("/")[-3:]
+                    path2 = path.split("/")[-3:]
+                    p1 = ""
+                    for p in path1:
+                        p1 = os.path.join(p1, p)
+                    p2 = ""
+                    for p in path2:
+                        p2 = os.path.join(p2, p)    
+                    p1 = path_to_base64(p1)
+                    p2 = path_to_base64(p2)
+                    if(p1 not in dict1.keys()):
+                        dict1[p1] = {p2:aug}
+                    else:
+                        temp = dict1[p1]
+                        temp[p2] = aug
+                        dict1[p1] = temp
+                    dict2[p2] = p1
+
+    return dict1, dict2
