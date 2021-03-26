@@ -35,9 +35,8 @@ from core import (
     remove_dataset_from_workspace,
 )
 from dbmodels import Class, Dataset, Globals, Info, User, Workspace
+from dl_main import dl_main
 from req_models import ClassCreate, ModelParams, WorkspaceCreate, WorkspacePatch
-
-# from dl_main import dl_main
 
 app = Flask(__name__)
 
