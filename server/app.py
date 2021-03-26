@@ -35,7 +35,8 @@ from core import (
 )
 from dbmodels import Class, Dataset, Globals, Info, User, Workspace
 from req_models import ClassCreate, ModelParams, WorkspaceCreate, WorkspacePatch
-from dl_main import dl_main
+
+#from dl_main import dl_main
 
 app = Flask(__name__)
 
@@ -434,7 +435,7 @@ def edit_workspace(email, workspace_id: int):
 def delete_workspace(email, workspace_id: int):
     workspace_name = f"workspace{workspace_id:03d}"
     Workspace.objects(workspace_id=workspace_id).delete()
-    os.remove(cnf.WORKSPACES_BASE_PATH, workspace_name)
+    os.remove(os.path.join(cnf.WORKSPACES_BASE_PATH, workspace_name))
     return {"message": "success"}
 
 
