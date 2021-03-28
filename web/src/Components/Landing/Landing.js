@@ -57,7 +57,7 @@ function Landing() {
           <a style={{float: "left"}} href="https://github.com/npalladium/InterIIT-Bosch">
             Github link
           </a>
-          <b style={{float: "right"}}>IIT Hyderabad,2021</b>
+          <b style={{float: "right"}}>Inter IIT Tech-Meet, 2021</b>
         </div>
       </Footer>
     </Layout>

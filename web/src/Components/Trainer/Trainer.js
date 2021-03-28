@@ -166,7 +166,7 @@ function Trainer(props) {
       const userWorkSpaceReq = await request(
         `${process.env.REACT_APP_API_URL}/workspaces/${workspace_id}`,
         {
-          method: "patch",
+          method: "post",
           headers: {
             Authorization: `Bearer ${localaccessToken}`,
             email: `${user.email}`,
@@ -200,7 +200,7 @@ function Trainer(props) {
       const updateRequest = await request(
         `${process.env.REACT_APP_API_URL}/workspaces/${workspace_id}/rpc/setModelParams`,
         {
-          method: "patch",
+          method: "post",
           headers: {
             Authorization: `Bearer ${localaccessToken}`,
             email: `${user.email}`,
@@ -255,13 +255,13 @@ function Trainer(props) {
               optimizerfn={optimizerfn}
               setOptimizerfn={setOptimizerfn}
               batchSize={batchSize}
-							setBatchSize={setBatchSize}
+              setBatchSize={setBatchSize}
               epochs={epochs}
               setEpochs={setEpochs}
               learningRate={learningRate}
               setLearningRate={setLearningRate}
               testTrainSplit={testTrainSplit}
-							setTestTrainSplit={setTestTrainSplit}
+              setTestTrainSplit={setTestTrainSplit}
             />
             <Button
               type="primary"

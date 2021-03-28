@@ -4,7 +4,7 @@ import PopupImage from "../PopupImage/PopupImage";
 import img from "./../PopupImage/stop.png";
 import {FaUpload} from "react-icons/fa";
 import "./styles.css";
-import { UploadOutlined } from '@ant-design/icons';
+import {UploadOutlined} from "@ant-design/icons";
 import {useAuth0} from "@auth0/auth0-react";
 import request from "umi-request";
 
@@ -22,47 +22,46 @@ function ImageRow(props) {
     */
   };
 
-  const handleOnChange = ({ file, fileList, event }) => {
+  const handleOnChange = ({file, fileList, event}) => {
     console.log(file, fileList, event);
     //Using Hooks to update the state to the current filelist
     // setDefaultFileList(fileList);
     //filelist - [{uid: "-1",url:'Some url to image'}]
   };
-  const toBase64 = file => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
-  });
+  const toBase64 = file =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    });
 
   const uploadImage = async options => {
-
-    const { onSuccess, onError, file, onProgress } = options;
-    console.log(`X:${file}`)
-    console.log(file)
-    try{
-        
+    const {onSuccess, onError, file, onProgress} = options;
+    console.log(`X:${file}`);
+    console.log(file);
+    try {
       const base64data = await toBase64(file);
-      
+
       console.log(base64data);
       // console.log(atob(base64data))/
-   
-      const UrlToSendDataTo = 'http://localhost:5000/pictest'
+
+      const UrlToSendDataTo = "http://localhost:5000/pictest";
       const response = await request(UrlToSendDataTo, {
         method: "post",
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: base64data })
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({image: base64data}),
       });
-      const res = response
-      onSuccess(file)
-      console.log(`response:${res}`)
-      console.log(res)
+      const res = response;
+      onSuccess(file);
+      console.log(`response:${res}`);
+      console.log(res);
     } catch (e) {
       console.log(`Error:${e.message}`);
     }
-    }
+  };
 
-  const DataClass = props.DataClass;
+  //const DataClass = props.DataClass;
   // const getImageDetails = async id => {
   //   try {
   //     const localaccessToken = await getAccessTokenSilently({
@@ -115,15 +114,15 @@ function ImageRow(props) {
                 <FaUpload />
               </Button>
             </Upload> */}
-             <Upload 
-            // {...imageStuff}
-            // accept="image/*"
-            customRequest={uploadImage}
-            onChange={handleOnChange}
-
+            <Upload
+              // {...imageStuff}
+              // accept="image/*"
+              customRequest={uploadImage}
+              onChange={handleOnChange}
             >
               <Button icon={<UploadOutlined />}>Click to Upload</Button>
-            </Upload>,
+            </Upload>
+            ,
           </Card>
         </Col>
         {imageb64Paths.length > 1 &&
@@ -200,15 +199,15 @@ function ImageRow(props) {
                 <FaUpload />
               </Button>
             </Upload> */}
-             <Upload 
-            // {...imageStuff}
-            // accept="image/*"
-            customRequest={uploadImage}
-            onChange={handleOnChange}
-
+            <Upload
+              // {...imageStuff}
+              // accept="image/*"
+              customRequest={uploadImage}
+              onChange={handleOnChange}
             >
               <Button icon={<UploadOutlined />}>Click to Upload</Button>
-            </Upload>,
+            </Upload>
+            ,
           </Card>
         </Col>
       </Row>
