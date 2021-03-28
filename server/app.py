@@ -36,6 +36,7 @@ from core import (
 )
 from dbmodels import Class, Dataset, Globals, Info, User, Workspace
 from dl_main import dl_main
+from predict import predict
 from req_models import ClassCreate, ModelParams, WorkspaceCreate, WorkspacePatch
 
 app = Flask(__name__)
@@ -713,12 +714,14 @@ def infer(email, workspace_id: int):
     image_bytes = image.encode("ascii")
     workspace_name = f"workspace{workspace_id:03d}"
     workspace_path = os.path.join(cnf.WORKSPACES_BASE_PATH, workspace_name)
+    sv_model = sorted(os.listdir(os.path.join(workspace_path,'models')))[-1]
+    model_path = os.path.join(workspace_path,'models',sv_model)
     ls_path = os.path.join(workspace_path, cnf.INF_FOLDER)
     n = len([x for x in os.listdir(ls_path) if x[:4] == "user"]) + 1
     f = os.path.join(ls_path, f"user_{n:03d}")
     with open(f, "wb") as fh:
         fh.write(base64.decodebytes(image_bytes))
-    return rpc_call()
+    return predict(f,workspace_path,model_path)
 
 
 @app.route(f"{w_path}/rpc/feedback", methods=[post])
